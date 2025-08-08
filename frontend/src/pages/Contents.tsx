@@ -55,15 +55,10 @@ export default function Course() {
 
   return (
     <Layout>
-      <h1 className="font-semibold text-3xl mb-5">
-        {!userQuery.isLoading ? `${userQuery.data.name} Contents` : ''}
-      </h1>
+      <h1 className="font-semibold text-3xl mb-5">{!userQuery.isLoading ? `${userQuery.data.name} Contents` : ''}</h1>
       <hr />
       {authenticatedUser.role !== 'user' ? (
-        <button
-          className="btn my-5 flex gap-2 w-full sm:w-auto justify-center"
-          onClick={() => setAddContentShow(true)}
-        >
+        <button className="btn my-5 flex gap-2 w-full sm:w-auto justify-center" onClick={() => setAddContentShow(true)}>
           <Plus /> Add Content
         </button>
       ) : null}
@@ -75,14 +70,14 @@ export default function Course() {
             className="input w-1/2"
             placeholder="Name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
           />
           <input
             type="text"
             className="input w-1/2"
             placeholder="Description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
           />
         </div>
       </div>
@@ -105,10 +100,7 @@ export default function Course() {
         </div>
         <hr />
 
-        <form
-          className="flex flex-col gap-5 mt-5"
-          onSubmit={handleSubmit(saveCourse)}
-        >
+        <form className="flex flex-col gap-5 mt-5" onSubmit={handleSubmit(saveCourse)}>
           <input
             type="text"
             className="input"
@@ -126,17 +118,9 @@ export default function Course() {
             {...register('description')}
           />
           <button className="btn" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <Loader className="animate-spin mx-auto" />
-            ) : (
-              'Save'
-            )}
+            {isSubmitting ? <Loader className="animate-spin mx-auto" /> : 'Save'}
           </button>
-          {error ? (
-            <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-              {error}
-            </div>
-          ) : null}
+          {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
         </form>
       </Modal>
     </Layout>

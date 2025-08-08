@@ -21,18 +21,8 @@ class UserService {
     return (await apiService.get<User>(`/api/users/${id}`)).data;
   }
 
-  async update(
-    id: string,
-    updateUserRequest: UpdateUserRequest,
-  ): Promise<void> {
-    const {
-      firstName,
-      isActive,
-      lastName,
-      password,
-      role,
-      username,
-    } = updateUserRequest;
+  async update(id: string, updateUserRequest: UpdateUserRequest): Promise<void> {
+    const { firstName, isActive, lastName, password, role, username } = updateUserRequest;
     await apiService.put(`/api/users/${id}`, {
       firstName: firstName || undefined,
       lastName: lastName || undefined,

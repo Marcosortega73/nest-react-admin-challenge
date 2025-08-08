@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 
 /* Auto refreshes the token if expired */
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  response => response,
   async function (error) {
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {

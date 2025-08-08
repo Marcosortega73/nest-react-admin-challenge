@@ -11,9 +11,8 @@ export default function UpdateProfile() {
   const { authenticatedUser } = useAuth();
   const [error, setError] = useState<string>();
 
-  const { data, isLoading, refetch } = useQuery(
-    `user-${authenticatedUser.id}`,
-    () => userService.findOne(authenticatedUser.id),
+  const { data, isLoading, refetch } = useQuery(`user-${authenticatedUser.id}`, () =>
+    userService.findOne(authenticatedUser.id),
   );
 
   const {
@@ -92,17 +91,9 @@ export default function UpdateProfile() {
             />
           </div>
           <button className="btn w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <Loader className="animate-spin mx-auto" />
-            ) : (
-              'Update'
-            )}
+            {isSubmitting ? <Loader className="animate-spin mx-auto" /> : 'Update'}
           </button>
-          {error ? (
-            <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-              {error}
-            </div>
-          ) : null}
+          {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
         </form>
       </div>
     );
