@@ -9,17 +9,13 @@ interface PrivateRouteProps extends RouteProps {
   roles?: string[];
 }
 
-export function PrivateRoute({
-  component: Component,
-  roles,
-  ...rest
-}: PrivateRouteProps) {
+export function PrivateRoute({ component: Component, roles, ...rest }: PrivateRouteProps) {
   const { authenticatedUser } = useContext(AuthenticationContext);
 
   return (
     <Route
       {...rest}
-      render={(props) => {
+      render={props => {
         if (authenticatedUser) {
           if (roles) {
             if (roles.includes(authenticatedUser.role)) {
@@ -43,12 +39,8 @@ export function AuthRoute({ component: Component, ...rest }) {
   return (
     <Route
       {...rest}
-      render={(props) => {
-        return authenticatedUser ? (
-          <Redirect to="/" />
-        ) : (
-          <Component {...props} />
-        );
+      render={props => {
+        return authenticatedUser ? <Redirect to="/" /> : <Component {...props} />;
       }}
     />
   );

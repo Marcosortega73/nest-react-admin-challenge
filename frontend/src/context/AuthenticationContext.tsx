@@ -13,9 +13,7 @@ export function AuthenticationProvider({ children }) {
   const [authenticatedUser, setAuthenticatedUser] = useState<User>();
 
   return (
-    <AuthenticationContext.Provider
-      value={{ authenticatedUser, setAuthenticatedUser }}
-    >
+    <AuthenticationContext.Provider value={{ authenticatedUser, setAuthenticatedUser }}>
       {children}
     </AuthenticationContext.Provider>
   );

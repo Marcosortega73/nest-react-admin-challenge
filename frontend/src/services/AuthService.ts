@@ -21,13 +21,7 @@ class AuthService {
   }
 
   async refresh(): Promise<AuthResponse> {
-    const authResponse = (
-      await axios.post<AuthResponse>(
-        '/api/auth/refresh',
-        {},
-        { withCredentials: true },
-      )
-    ).data;
+    const authResponse = (await axios.post<AuthResponse>('/api/auth/refresh', {}, { withCredentials: true })).data;
     apiService.defaults.headers.Authorization = `Bearer ${authResponse.token}`;
     return authResponse;
   }

@@ -10,19 +10,14 @@ class UserService {
   }
 
   async findAll(courseQuery: CourseQuery): Promise<Course[]> {
-    return (
-      await apiService.get<Course[]>('/api/courses', { params: courseQuery })
-    ).data;
+    return (await apiService.get<Course[]>('/api/courses', { params: courseQuery })).data;
   }
 
   async findOne(id: string): Promise<Course> {
     return (await apiService.get<Course>(`/api/courses/${id}`)).data;
   }
 
-  async update(
-    id: string,
-    updateCourseRequest: UpdateCourseRequest,
-  ): Promise<void> {
+  async update(id: string, updateCourseRequest: UpdateCourseRequest): Promise<void> {
     await apiService.put(`/api/courses/${id}`, updateCourseRequest);
   }
 

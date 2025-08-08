@@ -5,10 +5,7 @@ import UpdateContentRequest from '../models/content/UpdateContentRequest';
 import apiService from './ApiService';
 
 class ContentService {
-  async findAll(
-    courseId: string,
-    contentQuery: ContentQuery,
-  ): Promise<Content[]> {
+  async findAll(courseId: string, contentQuery: ContentQuery): Promise<Content[]> {
     return (
       await apiService.get<Content[]>(`/api/courses/${courseId}/contents`, {
         params: contentQuery,
@@ -16,25 +13,12 @@ class ContentService {
     ).data;
   }
 
-  async save(
-    courseId: string,
-    createContentRequest: CreateContentRequest,
-  ): Promise<void> {
-    await apiService.post(
-      `/api/courses/${courseId}/contents`,
-      createContentRequest,
-    );
+  async save(courseId: string, createContentRequest: CreateContentRequest): Promise<void> {
+    await apiService.post(`/api/courses/${courseId}/contents`, createContentRequest);
   }
 
-  async update(
-    courseId: string,
-    id: string,
-    updateContentRequest: UpdateContentRequest,
-  ): Promise<void> {
-    await apiService.put(
-      `/api/courses/${courseId}/contents/${id}`,
-      updateContentRequest,
-    );
+  async update(courseId: string, id: string, updateContentRequest: UpdateContentRequest): Promise<void> {
+    await apiService.put(`/api/courses/${courseId}/contents/${id}`, updateContentRequest);
   }
 
   async delete(courseId: string, id: string): Promise<void> {

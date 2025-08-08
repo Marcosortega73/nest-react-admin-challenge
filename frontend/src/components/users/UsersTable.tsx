@@ -58,53 +58,51 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
         <Table columns={['Name', 'Username', 'Status', 'Role', 'Created']}>
           {isLoading
             ? null
-            : data.map(
-                ({ id, firstName, lastName, role, isActive, username }) => (
-                  <tr key={id}>
-                    <TableItem>{`${firstName} ${lastName}`}</TableItem>
-                    <TableItem>{username}</TableItem>
-                    <TableItem>
-                      {isActive ? (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                          Inactive
-                        </span>
-                      )}
-                    </TableItem>
-                    <TableItem>{role}</TableItem>
-                    <TableItem className="text-right">
-                      <button
-                        className="text-indigo-600 hover:text-indigo-900 focus:outline-none"
-                        onClick={() => {
-                          setSelectedUserId(id);
+            : data.map(({ id, firstName, lastName, role, isActive, username }) => (
+                <tr key={id}>
+                  <TableItem>{`${firstName} ${lastName}`}</TableItem>
+                  <TableItem>{username}</TableItem>
+                  <TableItem>
+                    {isActive ? (
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                        Inactive
+                      </span>
+                    )}
+                  </TableItem>
+                  <TableItem>{role}</TableItem>
+                  <TableItem className="text-right">
+                    <button
+                      className="text-indigo-600 hover:text-indigo-900 focus:outline-none"
+                      onClick={() => {
+                        setSelectedUserId(id);
 
-                          setValue('firstName', firstName);
-                          setValue('lastName', lastName);
-                          setValue('username', username);
-                          setValue('role', role);
-                          setValue('isActive', isActive);
+                        setValue('firstName', firstName);
+                        setValue('lastName', lastName);
+                        setValue('username', username);
+                        setValue('role', role);
+                        setValue('isActive', isActive);
 
-                          setUpdateShow(true);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-900 ml-3 focus:outline-none"
-                        onClick={() => {
-                          setSelectedUserId(id);
-                          setDeleteShow(true);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </TableItem>
-                  </tr>
-                ),
-              )}
+                        setUpdateShow(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-red-600 hover:text-red-900 ml-3 focus:outline-none"
+                      onClick={() => {
+                        setSelectedUserId(id);
+                        setDeleteShow(true);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </TableItem>
+                </tr>
+              ))}
         </Table>
 
         {!isLoading && data.length < 1 ? (
@@ -120,8 +118,7 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
           <h3 className="mb-2 font-semibold">Delete User</h3>
           <hr />
           <p className="mt-2">
-            Are you sure you want to delete the user? All of user's data will be
-            permanently removed.
+            Are you sure you want to delete the user? All of user's data will be permanently removed.
             <br />
             This action cannot be undone.
           </p>
@@ -137,23 +134,11 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
           >
             Cancel
           </button>
-          <button
-            className="btn danger"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <Loader className="mx-auto animate-spin" />
-            ) : (
-              'Delete'
-            )}
+          <button className="btn danger" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? <Loader className="mx-auto animate-spin" /> : 'Delete'}
           </button>
         </div>
-        {error ? (
-          <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
       </Modal>
       {/* Update User Modal */}
       <Modal show={updateShow}>
@@ -172,17 +157,9 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
         </div>
         <hr />
 
-        <form
-          className="flex flex-col gap-5 mt-5"
-          onSubmit={handleSubmit(handleUpdate)}
-        >
+        <form className="flex flex-col gap-5 mt-5" onSubmit={handleSubmit(handleUpdate)}>
           <div className="flex flex-col gap-5 sm:flex-row">
-            <input
-              type="text"
-              className="input sm:w-1/2"
-              placeholder="First Name"
-              {...register('firstName')}
-            />
+            <input type="text" className="input sm:w-1/2" placeholder="First Name" {...register('firstName')} />
             <input
               type="text"
               className="input sm:w-1/2"
@@ -205,35 +182,19 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
             disabled={isSubmitting}
             {...register('password')}
           />
-          <select
-            className="input"
-            {...register('role')}
-            disabled={isSubmitting}
-          >
+          <select className="input" {...register('role')} disabled={isSubmitting}>
             <option value="user">User</option>
             <option value="editor">Editor</option>
             <option value="admin">Admin</option>
           </select>
           <div>
             <label className="font-semibold mr-3">Active</label>
-            <input
-              type="checkbox"
-              className="input w-5 h-5"
-              {...register('isActive')}
-            />
+            <input type="checkbox" className="input w-5 h-5" {...register('isActive')} />
           </div>
           <button className="btn" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <Loader className="animate-spin mx-auto" />
-            ) : (
-              'Save'
-            )}
+            {isSubmitting ? <Loader className="animate-spin mx-auto" /> : 'Save'}
           </button>
-          {error ? (
-            <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-              {error}
-            </div>
-          ) : null}
+          {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
         </form>
       </Modal>
     </>

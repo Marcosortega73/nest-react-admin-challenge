@@ -67,9 +67,7 @@ export default function CoursesTable({ data, isLoading }: UsersTableProps) {
                     <Link to={`/courses/${id}`}>{name}</Link>
                   </TableItem>
                   <TableItem>{description}</TableItem>
-                  <TableItem>
-                    {new Date(dateCreated).toLocaleDateString()}
-                  </TableItem>
+                  <TableItem>{new Date(dateCreated).toLocaleDateString()}</TableItem>
                   <TableItem className="text-right">
                     {['admin', 'editor'].includes(authenticatedUser.role) ? (
                       <button
@@ -114,8 +112,7 @@ export default function CoursesTable({ data, isLoading }: UsersTableProps) {
           <h3 className="mb-2 font-semibold">Delete Course</h3>
           <hr />
           <p className="mt-2">
-            Are you sure you want to delete the course? All of course's data
-            will be permanently removed.
+            Are you sure you want to delete the course? All of course's data will be permanently removed.
             <br />
             This action cannot be undone.
           </p>
@@ -131,23 +128,11 @@ export default function CoursesTable({ data, isLoading }: UsersTableProps) {
           >
             Cancel
           </button>
-          <button
-            className="btn danger"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <Loader className="mx-auto animate-spin" />
-            ) : (
-              'Delete'
-            )}
+          <button className="btn danger" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? <Loader className="mx-auto animate-spin" /> : 'Delete'}
           </button>
         </div>
-        {error ? (
-          <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
       </Modal>
       {/* Update Course Modal */}
       <Modal show={updateShow}>
@@ -166,17 +151,8 @@ export default function CoursesTable({ data, isLoading }: UsersTableProps) {
         </div>
         <hr />
 
-        <form
-          className="flex flex-col gap-5 mt-5"
-          onSubmit={handleSubmit(handleUpdate)}
-        >
-          <input
-            type="text"
-            className="input"
-            placeholder="Name"
-            required
-            {...register('name')}
-          />
+        <form className="flex flex-col gap-5 mt-5" onSubmit={handleSubmit(handleUpdate)}>
+          <input type="text" className="input" placeholder="Name" required {...register('name')} />
           <input
             type="text"
             className="input"
@@ -186,17 +162,9 @@ export default function CoursesTable({ data, isLoading }: UsersTableProps) {
             {...register('description')}
           />
           <button className="btn" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <Loader className="animate-spin mx-auto" />
-            ) : (
-              'Save'
-            )}
+            {isSubmitting ? <Loader className="animate-spin mx-auto" /> : 'Save'}
           </button>
-          {error ? (
-            <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">
-              {error}
-            </div>
-          ) : null}
+          {error ? <div className="text-red-500 p-3 font-semibold border rounded-md bg-red-50">{error}</div> : null}
         </form>
       </Modal>
     </>
