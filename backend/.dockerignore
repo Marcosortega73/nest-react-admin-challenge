@@ -1,4 +1,10 @@
-dist
-node_modules
-.env
 .git
+node_modules
+dist
+coverage
+npm-debug.log
+yarn-error.log
+Dockerfile*
+docker-compose*
+.env
+*.local
