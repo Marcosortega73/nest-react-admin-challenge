@@ -18,17 +18,17 @@ export class CourseService {
     Object.keys(courseQuery).forEach((key) => {
       courseQuery[key] = ILike(`%${courseQuery[key]}%`);
     });
-    return await Course.find({
+    return (await Course.find({
       where: courseQuery,
       order: {
         name: 'ASC',
         description: 'ASC',
       },
-    });
+    })) as Course[];
   }
 
   async findById(id: string): Promise<Course> {
-    const course = await Course.findOne(id);
+    const course = await Course.findOne({ where: { id } });
     if (!course) {
       throw new HttpException(
         `Could not find course with matching id ${id}`,
@@ -45,7 +45,7 @@ export class CourseService {
 
   async delete(id: string): Promise<string> {
     const course = await this.findById(id);
-    await Course.delete(course);
+    await Course.delete(course.id);
     return id;
   }
 

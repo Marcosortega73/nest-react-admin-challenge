@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import useAuth from './hooks/useAuth';
 import Contents from './pages/Contents';
@@ -7,7 +7,7 @@ import Courses from './pages/Courses';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Users from './pages/Users';
-import { AuthRoute, PrivateRoute } from './Route';
+import { AuthWrapper, PrivateWrapper } from './Route';
 import authService from './services/AuthService';
 
 export default function App() {
@@ -34,15 +34,50 @@ export default function App() {
   }, []);
 
   return isLoaded ? (
-    <Router>
-      <Switch>
-        <PrivateRoute exact path="/" component={Dashboard} />
-        <PrivateRoute exact path="/users" component={Users} roles={['admin']} />
-        <PrivateRoute exact path="/courses" component={Courses} />
-        <PrivateRoute exact path="/courses/:id" component={Contents} />
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateWrapper>
+              <Dashboard />
+            </PrivateWrapper>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PrivateWrapper roles={['admin']}>
+              <Users />
+            </PrivateWrapper>
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <PrivateWrapper>
+              <Courses />
+            </PrivateWrapper>
+          }
+        />
+        <Route
+          path="/courses/:id"
+          element={
+            <PrivateWrapper>
+              <Contents />
+            </PrivateWrapper>
+          }
+        />
 
-        <AuthRoute exact path="/login" component={Login} />
-      </Switch>
-    </Router>
+        <Route
+          path="/login"
+          element={
+            <AuthWrapper>
+              <Login />
+            </AuthWrapper>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   ) : null;
 }
