@@ -19,8 +19,12 @@ export class UserService {
     }
 
     const { password } = createUserDto;
-    createUserDto.password = await bcrypt.hash(password, 10);
-    return User.create(createUserDto).save();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    return await User.create({
+      ...createUserDto,
+      password: hashedPassword,
+    }).save();
   }
 
   async findAll(userQuery: UserQuery): Promise<User[]> {
@@ -40,7 +44,7 @@ export class UserService {
   }
 
   async findById(id: string): Promise<User> {
-    const user = await User.findOne(id);
+    const user = await User.findOne({ where: { id } });
 
     if (!user) {
       throw new HttpException(
@@ -81,7 +85,7 @@ export class UserService {
   }
 
   async delete(id: string): Promise<string> {
-    await User.delete(await this.findById(id));
+    await User.delete(id);
     return id;
   }
 
@@ -91,8 +95,7 @@ export class UserService {
 
   /* Hash the refresh token and save it to the database */
   async setRefreshToken(id: string, refreshToken: string): Promise<void> {
-    const user = await this.findById(id);
-    await User.update(user, {
+    await User.update(id, {
       refreshToken: refreshToken ? await bcrypt.hash(refreshToken, 10) : null,
     });
   }

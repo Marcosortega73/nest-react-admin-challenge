@@ -39,7 +39,7 @@ export class ContentService {
   }
 
   async findById(id: string): Promise<Content> {
-    const content = await Content.findOne(id);
+    const content = await Content.findOne({ where: { id } });
 
     if (!content) {
       throw new HttpException(
@@ -89,7 +89,7 @@ export class ContentService {
 
   async delete(courseId: string, id: string): Promise<string> {
     const content = await this.findByCourseIdAndId(courseId, id);
-    await Content.delete(content);
+    await content.remove();
     return id;
   }
 
