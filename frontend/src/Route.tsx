@@ -1,47 +1,37 @@
 import { useContext } from 'react';
-import { Redirect, Route, RouteProps } from 'react-router';
+import { Navigate } from 'react-router-dom';
 
 import { AuthenticationContext } from './context/AuthenticationContext';
 
-export { Route } from 'react-router';
-
-interface PrivateRouteProps extends RouteProps {
+interface PrivateWrapperProps {
+  children: React.ReactElement;
   roles?: string[];
 }
 
-export function PrivateRoute({ component: Component, roles, ...rest }: PrivateRouteProps) {
+export function PrivateWrapper({ children, roles }: PrivateWrapperProps) {
   const { authenticatedUser } = useContext(AuthenticationContext);
 
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        if (authenticatedUser) {
-          if (roles) {
-            if (roles.includes(authenticatedUser.role)) {
-              return <Component {...props} />;
-            } else {
-              return <Redirect to="/" />;
-            }
-          } else {
-            return <Component {...props} />;
-          }
-        }
-        return <Redirect to="/login" />;
-      }}
-    />
-  );
+  if (!authenticatedUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (roles && !roles.includes(authenticatedUser.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
 
-export function AuthRoute({ component: Component, ...rest }) {
+interface AuthWrapperProps {
+  children: React.ReactElement;
+}
+
+export function AuthWrapper({ children }: AuthWrapperProps) {
   const { authenticatedUser } = useContext(AuthenticationContext);
 
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        return authenticatedUser ? <Redirect to="/" /> : <Component {...props} />;
-      }}
-    />
-  );
+  if (authenticatedUser) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
