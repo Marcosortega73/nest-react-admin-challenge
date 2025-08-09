@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import Layout from '../components/layout';
 import Modal from '../components/shared/Modal';
@@ -12,6 +12,7 @@ import userService from '../services/UserService';
 
 export default function Users() {
   const { authenticatedUser } = useAuth();
+  const queryClient = useQueryClient();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -21,22 +22,16 @@ export default function Users() {
   const [addUserShow, setAddUserShow] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
-  const { data, isLoading } = useQuery(
-    ['users', firstName, lastName, username, role],
-    async () => {
-      return (
-        await userService.findAll({
-          firstName: firstName || undefined,
-          lastName: lastName || undefined,
-          username: username || undefined,
-          role: role || undefined,
-        })
-      ).filter(user => user.id !== authenticatedUser.id);
-    },
-    {
-      refetchInterval: 1000,
-    },
-  );
+  const { data, isLoading } = useQuery(['users', firstName, lastName, username, role], async () => {
+    return (
+      await userService.findAll({
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+        username: username || undefined,
+        role: role || undefined,
+      })
+    ).filter(user => user.id !== authenticatedUser.id);
+  });
 
   const {
     register,
@@ -48,8 +43,11 @@ export default function Users() {
   const saveUser = async (createUserRequest: CreateUserRequest) => {
     try {
       await userService.save(createUserRequest);
+
+      queryClient.invalidateQueries(['users']);
+
       setAddUserShow(false);
-      setError(null);
+      setError(undefined);
       reset();
     } catch (error) {
       setError(error.response.data.message);

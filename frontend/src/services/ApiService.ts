@@ -16,11 +16,9 @@ axiosInstance.interceptors.response.use(
 
       try {
         const { token } = await authService.refresh();
-        console.log(token);
         error.response.config.headers.Authorization = `Bearer ${token}`;
         return axiosInstance(error.response.config);
       } catch (error) {
-        //window.location.href = '/login';
         return Promise.reject(error);
       }
     }
