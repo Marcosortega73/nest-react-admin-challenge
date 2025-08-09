@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 import ContentsTable from '../components/content/ContentsTable';
 import Layout from '../components/layout';
