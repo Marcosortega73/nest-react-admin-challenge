@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Loader, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
+import { useQueryClient } from 'react-query';
 
 import UpdateUserRequest from '../../models/user/UpdateUserRequest';
 import User from '../../models/user/User';
@@ -15,6 +16,7 @@ interface UsersTableProps {
 }
 
 export default function UsersTable({ data, isLoading }: UsersTableProps) {
+  const queryClient = useQueryClient();
   const [deleteShow, setDeleteShow] = useState<boolean>(false);
   const [updateShow, setUpdateShow] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -33,6 +35,9 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
     try {
       setIsDeleting(true);
       await userService.delete(selectedUserId);
+
+      queryClient.invalidateQueries(['users']);
+
       setDeleteShow(false);
     } catch (error) {
       setError(error.response.data.message);
@@ -44,9 +49,12 @@ export default function UsersTable({ data, isLoading }: UsersTableProps) {
   const handleUpdate = async (updateUserRequest: UpdateUserRequest) => {
     try {
       await userService.update(selectedUserId, updateUserRequest);
+
+      queryClient.invalidateQueries(['users']);
+
       setUpdateShow(false);
       reset();
-      setError(null);
+      setError(undefined);
     } catch (error) {
       setError(error.response.data.message);
     }

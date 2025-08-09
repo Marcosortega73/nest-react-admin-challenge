@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 
-import { User } from '../user/user.entity';
+import { Role } from '../enums/role.enum';
 
 export class LoginDto {
   @IsNotEmpty()
@@ -10,7 +10,16 @@ export class LoginDto {
   password: string;
 }
 
+export class UserResponseDto {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+  isActive: boolean;
+}
+
 export class LoginResponseDto {
   token: string;
-  user: User;
+  user: UserResponseDto;
 }

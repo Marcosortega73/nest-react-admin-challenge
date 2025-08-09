@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useParams } from 'react-router-dom';
 
 import ContentsTable from '../components/content/ContentsTable';
@@ -12,16 +12,17 @@ import CreateContentRequest from '../models/content/CreateContentRequest';
 import contentService from '../services/ContentService';
 import courseService from '../services/CourseService';
 
-export default function Course() {
+export default function Contents() {
   const { id } = useParams<{ id: string }>();
   const { authenticatedUser } = useAuth();
+  const queryClient = useQueryClient();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [addContentShow, setAddContentShow] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
-  const userQuery = useQuery('user', async () => courseService.findOne(id));
+  const courseQuery = useQuery([`course-${id}`], async () => courseService.findOne(id));
 
   const {
     register,
@@ -30,24 +31,22 @@ export default function Course() {
     reset,
   } = useForm<CreateContentRequest>();
 
-  const { data, isLoading } = useQuery(
-    [`contents-${id}`, name, description],
-    async () =>
-      contentService.findAll(id, {
-        name: name || undefined,
-        description: description || undefined,
-      }),
-    {
-      refetchInterval: 1000,
-    },
+  const { data, isLoading } = useQuery([`contents-${id}`, name, description], async () =>
+    contentService.findAll(id, {
+      name: name || undefined,
+      description: description || undefined,
+    }),
   );
 
   const saveCourse = async (createContentRequest: CreateContentRequest) => {
     try {
       await contentService.save(id, createContentRequest);
+
+      queryClient.invalidateQueries([`contents-${id}`]);
+
       setAddContentShow(false);
       reset();
-      setError(null);
+      setError(undefined);
     } catch (error) {
       setError(error.response.data.message);
     }
@@ -55,7 +54,9 @@ export default function Course() {
 
   return (
     <Layout>
-      <h1 className="font-semibold text-3xl mb-5">{!userQuery.isLoading ? `${userQuery.data.name} Contents` : ''}</h1>
+      <h1 className="font-semibold text-3xl mb-5">
+        {!courseQuery.isLoading ? `${courseQuery.data.name} Contents` : ''}
+      </h1>
       <hr />
       {authenticatedUser.role !== 'user' ? (
         <button className="btn my-5 flex gap-2 w-full sm:w-auto justify-center" onClick={() => setAddContentShow(true)}>
