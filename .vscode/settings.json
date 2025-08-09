@@ -14,5 +14,7 @@
   "eslint.workingDirectories": [
     "backend",
     "frontend"
-  ]
+  ],
+  "endOfLine": "lf"
+
 }
