@@ -7,6 +7,7 @@ import { validate } from './config/env.validation';
 import { ContentModule } from './content/content.module';
 import { CourseModule } from './course/course.module';
 import { DatabaseModule } from './database/database.module';
+import { EnrollmentModule } from './enrollments/enrollments.module';
 import { StatsModule } from './stats/stats.module';
 import { UserModule } from './user/user.module';
 
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
     CourseModule,
     ContentModule,
     StatsModule,
+    EnrollmentModule,
   ],
   controllers: [],
   providers: [],
