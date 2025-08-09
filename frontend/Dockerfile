@@ -1,11 +1,11 @@
 # ---------- Deps cache ----------
-FROM node:16-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile && yarn cache clean
 
 # ---------- Build ----------
-FROM node:16-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules

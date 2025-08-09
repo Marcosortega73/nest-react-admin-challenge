@@ -1,6 +1,6 @@
 # ---------- Build stage ----------
 
-FROM node:16-alpine AS build
+FROM node:20-alpine AS build
 
 RUN apk add --no-cache python3 make g++
 
@@ -18,7 +18,7 @@ RUN yarn cache clean
 
 # ---------- Runtime stage ----------
 
-FROM node:16-alpine AS runtime
+FROM node:20-alpine AS runtime
 
 ENV NODE_ENV=production
 
