@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import CoursesTable from '../components/courses/CoursesTable';
 import Layout from '../components/layout';
@@ -18,16 +18,12 @@ export default function Courses() {
   const [error, setError] = useState<string>();
 
   const { authenticatedUser } = useAuth();
-  const { data, isLoading } = useQuery(
-    ['courses', name, description],
-    () =>
-      courseService.findAll({
-        name: name || undefined,
-        description: description || undefined,
-      }),
-    {
-      refetchInterval: 1000,
-    },
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery(['courses', name, description], () =>
+    courseService.findAll({
+      name: name || undefined,
+      description: description || undefined,
+    }),
   );
 
   const {
@@ -40,9 +36,12 @@ export default function Courses() {
   const saveCourse = async (createCourseRequest: CreateCourseRequest) => {
     try {
       await courseService.save(createCourseRequest);
+
+      queryClient.invalidateQueries(['courses']);
+
       setAddCourseShow(false);
       reset();
-      setError(null);
+      setError(undefined);
     } catch (error) {
       setError(error.response.data.message);
     }
