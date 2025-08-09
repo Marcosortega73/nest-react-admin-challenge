@@ -36,7 +36,7 @@ export class UserService {
         firstName: 'ASC',
         lastName: 'ASC',
       },
-    });
+    }) as Promise<User[]>;
   }
 
   async findById(id: string): Promise<User> {

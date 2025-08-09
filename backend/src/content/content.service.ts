@@ -29,13 +29,13 @@ export class ContentService {
       contentQuery[key] = ILike(`%${contentQuery[key]}%`);
     });
 
-    return await Content.find({
+    return (await Content.find({
       where: contentQuery,
       order: {
         name: 'ASC',
         description: 'ASC',
       },
-    });
+    })) as Content[];
   }
 
   async findById(id: string): Promise<Content> {
