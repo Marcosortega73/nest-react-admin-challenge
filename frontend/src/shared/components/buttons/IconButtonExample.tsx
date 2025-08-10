@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bell, Download, Edit, Heart, Plus, Search, Settings, Trash2 } from 'react-feather';
 
-import IconButtonComponent from './IconButtonComponent';
+import { IconButtonComponent } from './IconButtonComponent';
 
 // Ejemplo de uso del IconButton
 const IconButtonExample: React.FC = () => {
@@ -29,11 +29,9 @@ const IconButtonExample: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-700">Tamaños</h3>
         <div className="flex items-center gap-3">
-          <IconButtonComponent icon={<Edit />} size="xs" tooltip="Extra pequeño" />
           <IconButtonComponent icon={<Edit />} size="sm" tooltip="Pequeño" />
           <IconButtonComponent icon={<Edit />} size="md" tooltip="Mediano" />
           <IconButtonComponent icon={<Edit />} size="lg" tooltip="Grande" />
-          <IconButtonComponent icon={<Edit />} size="xl" tooltip="Extra grande" />
         </div>
       </div>
 

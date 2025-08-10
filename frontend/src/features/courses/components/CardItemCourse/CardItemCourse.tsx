@@ -1,6 +1,6 @@
 import CourseDefaultImg from '@assets/images/courses/courses-default.webp';
-import IconButtonComponent from '@components/shared/buttons/IconButtonComponent';
 import Course from '@models/course/Course';
+import { IconButtonComponent } from '@shared/components/buttons';
 import { Eye, Users } from 'react-feather';
 
 import styles from './CardItemCourse.module.css';
