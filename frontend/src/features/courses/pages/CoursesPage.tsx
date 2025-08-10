@@ -14,7 +14,7 @@ import { CourseFiltersComponent } from '../components/CourseFiltersComponent';
 import { useCourses } from '../hooks/useCourses';
 import { FindCoursesParams } from '../types';
 
-export default function Courses() {
+export default function CoursesPage() {
   const [filters, setFilters] = useState<FindCoursesParams>({ name: '', description: '' });
 
   const queryFilters = useMemo<FindCoursesParams>(
