@@ -1,10 +1,10 @@
 import Layout from '@components/layout';
-import ButtonComponent from '@components/shared/buttons/ButtonComponent';
 import Modal from '@components/shared/Modal';
 import { CourseCardsContainer, HeaderPageCourse } from '@features/courses/components';
 import courseService from '@features/courses/services/course.api';
 import useAuth from '@hooks/useAuth';
 import CreateCourseRequest from '@models/course/CreateCourseRequest';
+import { ButtonComponent } from '@shared/components/buttons';
 import { useMemo, useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
