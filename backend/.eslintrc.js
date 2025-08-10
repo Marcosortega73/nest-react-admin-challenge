@@ -19,7 +19,7 @@ module.exports = {
     jest: true,
     es6: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'ormconfig.js'],
+  ignorePatterns: ['.eslintrc.js', 'ormconfig.js', 'jest.config.ts'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
