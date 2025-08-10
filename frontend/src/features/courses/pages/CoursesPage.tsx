@@ -1,33 +1,37 @@
-import { useState } from 'react';
+import Layout from '@components/layout';
+import ButtonComponent from '@components/shared/buttons/ButtonComponent';
+import Modal from '@components/shared/Modal';
+import { CourseCardsContainer, HeaderPageCourse } from '@features/courses/components';
+import courseService from '@features/courses/services/course.api';
+import useAuth from '@hooks/useAuth';
+import CreateCourseRequest from '@models/course/CreateCourseRequest';
+import { useMemo, useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 
-import { CourseCardsContainer, HeaderPageCourse } from '../components/courses';
-import CoursesTable from '../components/courses/CoursesTable';
-import Layout from '../components/layout';
-import ButtonComponent from '../components/shared/buttons/ButtonComponent';
-import IconButtonExample from '../components/shared/buttons/IconButtonExample';
-import Modal from '../components/shared/Modal';
-import useAuth from '../hooks/useAuth';
-import CreateCourseRequest from '../models/course/CreateCourseRequest';
-import courseService from '../services/CourseService';
+import { CourseFiltersComponent } from '../components/CourseFiltersComponent';
+import { useCourses } from '../hooks/useCourses';
+import { FindCoursesParams } from '../types';
 
 export default function Courses() {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [filters, setFilters] = useState<FindCoursesParams>({ name: '', description: '' });
+
+  const queryFilters = useMemo<FindCoursesParams>(
+    () => ({
+      name: filters.name?.trim() || undefined,
+      description: filters.description?.trim() || undefined,
+    }),
+    [filters.name, filters.description],
+  );
+
+  const { data = [], isLoading, error: fetchError } = useCourses(queryFilters);
 
   const [addCourseShow, setAddCourseShow] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
   const { authenticatedUser } = useAuth();
   const queryClient = useQueryClient();
-  const { data, isLoading } = useQuery(['courses', name, description], () =>
-    courseService.findAll({
-      name: name || undefined,
-      description: description || undefined,
-    }),
-  );
 
   const {
     register,
@@ -52,8 +56,6 @@ export default function Courses() {
 
   return (
     <Layout>
-      {/*       <IconButtonExample />
-       */}{' '}
       <HeaderPageCourse
         title="Courses"
         isUser={authenticatedUser.role === 'user'}
@@ -68,26 +70,25 @@ export default function Courses() {
           />
         }
       />
-      {/* <div className="table-filter">
-        <div className="flex flex-row gap-5">
-          <input
-            type="text"
-            className="input w-1/2"
-            placeholder="Name"
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
-          <input
-            type="text"
-            className="input w-1/2"
-            placeholder="Description"
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
+      {fetchError && (
+        <div className="text-red-600 p-3 border rounded bg-red-50 mb-3">
+          {(fetchError as any)?.message ?? 'Error loading courses'}
         </div>
-      </div> */}
-      {/* <CoursesTable data={data} isLoading={isLoading} /> */}
-      <CourseCardsContainer />
+      )}
+
+      {isLoading && (
+        <div className="flex justify-center items-center w-full h-full">
+          <Loader className="animate-spin" />
+        </div>
+      )}
+
+      {!isLoading && !fetchError && (
+        <>
+          <CourseFiltersComponent filters={filters} setFilters={setFilters} />
+          {/* <CoursesTable data={data} isLoading={isLoading} /> */}
+          <CourseCardsContainer data={data} isLoading={isLoading} />
+        </>
+      )}
       {/* Add User Modal */}
       <Modal show={addCourseShow}>
         <div className="flex">
