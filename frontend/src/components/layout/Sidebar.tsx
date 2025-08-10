@@ -23,10 +23,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={'sidebar ' + className}>
-      <Link to="/" className="no-underline text-black">
-        <h1 className="font-semibold text-center">Carna Project</h1>
-      </Link>
-      <nav className="mt-5 flex flex-col gap-3 flex-grow">
+      <nav className="mt-5 flex flex-col gap-3 flex-grow shadow-none">
         <SidebarItem to="/">
           <Home /> Dashboard
         </SidebarItem>

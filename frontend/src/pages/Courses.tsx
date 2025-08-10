@@ -3,8 +3,11 @@ import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from 'react-query';
 
+import { CourseCardsContainer, HeaderPageCourse } from '../components/courses';
 import CoursesTable from '../components/courses/CoursesTable';
 import Layout from '../components/layout';
+import ButtonComponent from '../components/shared/buttons/ButtonComponent';
+import IconButtonExample from '../components/shared/buttons/IconButtonExample';
 import Modal from '../components/shared/Modal';
 import useAuth from '../hooks/useAuth';
 import CreateCourseRequest from '../models/course/CreateCourseRequest';
@@ -49,15 +52,23 @@ export default function Courses() {
 
   return (
     <Layout>
-      <h1 className="font-semibold text-3xl mb-5">Manage Courses</h1>
-      <hr />
-      {authenticatedUser.role !== 'user' ? (
-        <button className="btn my-5 flex gap-2 w-full sm:w-auto justify-center" onClick={() => setAddCourseShow(true)}>
-          <Plus /> Add Course
-        </button>
-      ) : null}
-
-      <div className="table-filter">
+      {/*       <IconButtonExample />
+       */}{' '}
+      <HeaderPageCourse
+        title="Courses"
+        isUser={authenticatedUser.role === 'user'}
+        buttonNew={
+          <ButtonComponent
+            title="Add Course"
+            icon={<Plus />}
+            onClick={() => setAddCourseShow(true)}
+            variant="primary"
+            positionIcon="left"
+            size="md"
+          />
+        }
+      />
+      {/* <div className="table-filter">
         <div className="flex flex-row gap-5">
           <input
             type="text"
@@ -74,10 +85,9 @@ export default function Courses() {
             onChange={e => setDescription(e.target.value)}
           />
         </div>
-      </div>
-
-      <CoursesTable data={data} isLoading={isLoading} />
-
+      </div> */}
+      {/* <CoursesTable data={data} isLoading={isLoading} /> */}
+      <CourseCardsContainer />
       {/* Add User Modal */}
       <Modal show={addCourseShow}>
         <div className="flex">
