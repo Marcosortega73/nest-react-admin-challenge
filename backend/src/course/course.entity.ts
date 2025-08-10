@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Content } from '../content/content.entity';
+import { CourseResource } from '../course-resources/course-resource.entity';
 import { Enrollment } from '../enrollments/enrollments.entity';
 
 @Entity()
@@ -23,8 +23,8 @@ export class Course extends BaseEntity {
   @Column()
   dateCreated: Date;
 
-  @OneToMany(() => Content, (content) => content.course)
-  contents: Content[];
+  @OneToMany(() => CourseResource, (resource) => resource.course)
+  resources: CourseResource[];
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];

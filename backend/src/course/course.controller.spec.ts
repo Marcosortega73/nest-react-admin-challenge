@@ -1,7 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { CreateContentDto, UpdateContentDto } from '../content/content.dto';
-import { ContentService } from '../content/content.service';
 import { CourseController } from './course.controller';
 import { CreateCourseDto, UpdateCourseDto } from './course.dto';
 import { CourseService } from './course.service';
@@ -55,53 +53,6 @@ const CourseMockService = {
   delete: jest.fn().mockImplementation((id) => id),
 };
 
-const ContentMockService = {
-  save: jest
-    .fn()
-    .mockImplementation((id: string, createContentDto: CreateContentDto) => {
-      return {
-        id: 'testid',
-        dateCreated: new Date(),
-        ...createContentDto,
-      };
-    }),
-  findAllByCourseId: jest.fn().mockImplementation((id: string) => {
-    return [
-      {
-        id: 'testid1',
-        name: 'test1',
-        description: 'test1',
-        dateCreated: new Date(),
-      },
-      {
-        id: 'testid2',
-        name: 'test2',
-        description: 'test2',
-        dateCreated: new Date(),
-      },
-      {
-        id: 'testid3',
-        name: 'test3',
-        description: 'test3',
-        dateCreated: new Date(),
-      },
-    ];
-  }),
-  update: jest
-    .fn()
-    .mockImplementation(
-      (id: string, contentId: string, updateContentDto: UpdateContentDto) => {
-        return {
-          id: contentId,
-          ...updateContentDto,
-        };
-      },
-    ),
-  delete: jest
-    .fn()
-    .mockImplementation((id: string, contentId: string) => contentId),
-};
-
 describe('CourseController', () => {
   let controller: CourseController;
 
@@ -112,10 +63,6 @@ describe('CourseController', () => {
         {
           provide: CourseService,
           useValue: CourseMockService,
-        },
-        {
-          provide: ContentService,
-          useValue: ContentMockService,
         },
       ],
     }).compile();
@@ -191,76 +138,6 @@ describe('CourseController', () => {
     it('should delete a course and return the id', async () => {
       const id = await controller.delete('testid');
       expect(id).toBe('testid');
-    });
-  });
-
-  describe('saveContent', () => {
-    it('should get the saved content', async () => {
-      const spy = jest.spyOn(global, 'Date');
-      const content = await controller.saveContent('testcourseid', {
-        name: 'test',
-        description: 'test',
-      });
-      const date = spy.mock.instances[0];
-
-      expect(content).toEqual({
-        id: 'testid',
-        name: 'test',
-        description: 'test',
-        dateCreated: date,
-      });
-    });
-  });
-
-  describe('findAllContentsByCourseId', () => {
-    it('should get the array of contents', async () => {
-      const contents = await controller.findAllContentsByCourseId(
-        'testcourseid',
-        {},
-      );
-
-      expect(contents[0].id).toBe('testid1');
-      expect(contents[1].name).toBe('test2');
-      expect(contents[2].description).toBe('test3');
-    });
-  });
-
-  describe('updateContent', () => {
-    it('should update a content and return changed values', async () => {
-      const updatedContent = await controller.updateContent(
-        'testid',
-        'testcontentid',
-        {
-          name: 'test',
-          description: 'test',
-        },
-      );
-
-      expect(updatedContent).toEqual({
-        id: 'testcontentid',
-        name: 'test',
-        description: 'test',
-      });
-
-      const updatedContent2 = await controller.updateContent(
-        'testid',
-        'testcontentid2',
-        {
-          description: 'test',
-        },
-      );
-
-      expect(updatedContent2).toEqual({
-        id: 'testcontentid2',
-        description: 'test',
-      });
-    });
-  });
-
-  describe('deleteContent', () => {
-    it('should delete a content and return the id', async () => {
-      const id = await controller.deleteContent('testid', 'testcontentid');
-      expect(id).toBe('testcontentid');
     });
   });
 });
