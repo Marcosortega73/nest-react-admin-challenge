@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Menu, X } from 'react-feather';
 
+import AppBar from './AppBar';
 import Sidebar from './Sidebar';
 
 export default function Layout({ children }) {
@@ -8,6 +9,7 @@ export default function Layout({ children }) {
 
   return (
     <>
+      <AppBar />
       <Sidebar className={showSidebar ? 'show' : ''} />
       <div className="pt-10 lg:ml-72 mx-auto px-5 sm:px-10 py-5">{children}</div>
       <button
