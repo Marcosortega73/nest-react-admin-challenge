@@ -6,7 +6,7 @@
   "semi": true,
   "singleAttributePerLine": true,
   "arrowParens": "avoid",
-  "endOfLine": "auto",
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": "*.json",
@@ -14,7 +14,7 @@
         "tabWidth": 2,
         "singleAttributePerLine": true,
         "arrowParens": "avoid",
-        "endOfLine": "auto"
+        "endOfLine": "lf"
       }
     }
   ]
