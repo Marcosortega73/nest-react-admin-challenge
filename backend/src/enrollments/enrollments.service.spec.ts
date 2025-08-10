@@ -47,7 +47,7 @@ describe('EnrollmentService', () => {
                   };
                 },
               ),
-            findById: jest.fn().mockImplementation((id: string) => {
+            findOne: jest.fn().mockImplementation((id: string) => {
               return {
                 id,
                 userId: 'test',

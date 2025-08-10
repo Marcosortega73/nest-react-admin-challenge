@@ -23,7 +23,7 @@ export class EnrollmentService {
     return Enrollment.find() as Promise<Enrollment[]>;
   }
 
-  async findById(id: string): Promise<Enrollment> {
+  async findOne(id: string): Promise<Enrollment> {
     const enrollment = await Enrollment.findOne({ where: { id } });
 
     if (!enrollment) {

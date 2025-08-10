@@ -48,7 +48,7 @@ export class EnrollmentController {
   @Get('/:id')
   @UseGuards(UserGuard)
   async findOne(@Param('id') id: string): Promise<Enrollment> {
-    return await this.enrollmentService.findById(id);
+    return await this.enrollmentService.findOne(id);
   }
 
   @Delete('/:id')
