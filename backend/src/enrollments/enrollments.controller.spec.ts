@@ -30,24 +30,25 @@ const MockService = {
       source: EnrollmentSource.SELF,
     },
   ]),
-  saveEnrollment: jest
+  save: jest
     .fn()
     .mockImplementation((createEnrollmentDto: CreateEnrollmentDto) => {
       return {
-        id: 'testid',
+        id: 'test1',
         ...createEnrollmentDto,
       };
     }),
-  findOneEnrollment: jest.fn().mockImplementation((id) => {
+  findOne: jest.fn().mockImplementation((id) => {
     return {
       id,
-      userId: 'testid',
-      courseId: 'testid',
+      userId: 'test1',
+      courseId: 'test1',
       status: EnrollmentStatus.ACTIVE,
       source: EnrollmentSource.SELF,
     };
   }),
-  updateEnrollment: jest
+
+  update: jest
     .fn()
     .mockImplementation(
       (id: string, updateEnrollmentDto: UpdateEnrollmentDto) => {
@@ -57,7 +58,7 @@ const MockService = {
         };
       },
     ),
-  deleteEnrollment: jest.fn().mockImplementation((id: string) => id),
+  delete: jest.fn().mockImplementation((id: string) => id),
 };
 
 describe('EnrollmentController', () => {
@@ -81,32 +82,32 @@ describe('EnrollmentController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('saveEnrollment', () => {
+  describe('save', () => {
     it('should get the same user that is created', async () => {
       const returnValue = await controller.save({
-        userId: 'testid',
-        courseId: 'testid',
+        userId: 'test1',
+        courseId: 'test1',
         source: EnrollmentSource.SELF,
         status: EnrollmentStatus.ACTIVE,
       });
-      expect(returnValue.id).toBe('testid');
-      expect(returnValue.userId).toBe('testid');
+      expect(returnValue.id).toBe('test1');
+      expect(returnValue.userId).toBe('test1');
       expect(returnValue.status).toBe(EnrollmentStatus.ACTIVE);
     });
   });
 
-  describe('findOneEnrollment', () => {
+  describe('findOne', () => {
     it('should get a user matching id', async () => {
-      const enrollment = await controller.findOne('testid');
-      expect(enrollment.id).toBe('testid');
-      expect(enrollment.userId).toBe('testid');
+      const enrollment = await controller.findOne('test1');
+      expect(enrollment.id).toBe('test1');
+      expect(enrollment.userId).toBe('test1');
     });
   });
 
-  describe('deleteEnrollment', () => {
+  describe('delete', () => {
     it('should delete a user and return the id', async () => {
-      const id = await controller.delete('testid');
-      expect(id).toBe('testid');
+      const id = await controller.delete('test1');
+      expect(id).toBe('test1');
     });
   });
 });
