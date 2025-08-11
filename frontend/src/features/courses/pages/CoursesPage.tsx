@@ -69,7 +69,7 @@ export default function CoursesPage() {
 
       {!isLoading && !fetchError && (
         <>
-          <div className="flex items-center gap-4 w-full mb-6">
+          <div className="flex items-center gap-4 w-full mb-6 bg-gray-100 ">
             <CourseFilterButtons activeFilter={activeFilter} onFilterChange={handleFilterChange} />
             <CourseFiltersComponent
               filters={{ search: searchQuery }}

@@ -8,7 +8,7 @@ export default function Layout({ children }) {
   const [showSidebar, setShowSidebar] = useState(false);
   return (
     <>
-      <div className="urb-layout min-h-screen flex flex-col w-full">
+      <div className="urb-layout min-h-screen flex flex-col w-full bg-[var(--brand-header-background)] bg-gray-100 ">
         <AppBar />
         <Sidebar className={showSidebar ? 'show' : ''} />
         <div className="pt-5 lg:ml-72 px-5 sm:px-10 py-5">{children}</div>
