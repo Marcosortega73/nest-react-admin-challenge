@@ -2,6 +2,7 @@ import CourseDefaultImg from '@assets/images/courses/courses-default.webp';
 import { Course } from '@features/courses/types';
 import { IconButtonComponent } from '@shared/components/buttons';
 import { Eye, Users } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './CardItemCourse.module.css';
 
@@ -10,6 +11,12 @@ interface CardItemCourseProps {
 }
 
 export default function CardItemCourse({ course }: CardItemCourseProps) {
+  const navigate = useNavigate();
+
+  const handleViewCourse = () => {
+    navigate(`/courses/${course.id}`);
+  };
+
   return (
     <div className={styles.urbc_card}>
       <div className={`${styles.urbc_card__shine}`}></div>
@@ -18,7 +25,7 @@ export default function CardItemCourse({ course }: CardItemCourseProps) {
         <div className={`${styles.urbc_card__badge}`}>NEW</div>
         <div className={`${styles.urbc_card__image}`}>
           <img
-            src={CourseDefaultImg}
+            src={course.imageUrl || CourseDefaultImg}
             alt="Course default"
             className="w-full h-full object-cover"
             loading="lazy"
@@ -36,7 +43,7 @@ export default function CardItemCourse({ course }: CardItemCourseProps) {
             10
           </div>
           <div className={`${styles.urbc_card__enrollment}`}>
-            <IconButtonComponent icon={<Eye />} shape="circle" size="sm" variant="primary" />
+            <IconButtonComponent icon={<Eye />} shape="circle" size="sm" variant="primary" onClick={handleViewCourse} />
           </div>
         </div>
       </div>
