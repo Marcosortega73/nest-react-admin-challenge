@@ -2,14 +2,15 @@ import Modal from '@components/shared/Modal';
 import Table from '@components/shared/Table';
 import TableItem from '@components/shared/TableItem';
 import useAuth from '@hooks/useAuth';
-import Course from '@models/course/Course';
 import UpdateCourseRequest from '@models/course/UpdateCourseRequest';
-import courseService from '@services/CourseService';
 import { useState } from 'react';
 import { AlertTriangle, Loader, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from 'react-query';
 import { Link } from 'react-router-dom';
+
+import courseService from '../services/course.api';
+import { Course } from '../types';
 
 interface UsersTableProps {
   data: Course[];

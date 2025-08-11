@@ -1,8 +1,9 @@
-import Course from '@models/course/Course';
 import CourseQuery from '@models/course/CourseQuery';
 import CreateCourseRequest from '@models/course/CreateCourseRequest';
 import UpdateCourseRequest from '@models/course/UpdateCourseRequest';
 import apiService from '@services/ApiService';
+
+import { Course } from '../types';
 
 class CourseService {
   async save(createCourseRequest: CreateCourseRequest): Promise<void> {

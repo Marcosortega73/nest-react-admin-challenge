@@ -1,5 +1,5 @@
 import CourseDefaultImg from '@assets/images/courses/courses-default.webp';
-import Course from '@models/course/Course';
+import { Course } from '@features/courses/types';
 import { IconButtonComponent } from '@shared/components/buttons';
 import { Eye, Users } from 'react-feather';
 
