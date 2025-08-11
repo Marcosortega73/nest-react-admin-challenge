@@ -5,7 +5,8 @@ export interface CreateCourseLessonRequest {
   title: string;
   description?: string;
   type: LessonType;
-  contentUrl: string;
+  contentUrl?: string; // For VIDEO, PDF, LINK types
+  html?: string; // For TEXT type
   isPublished?: boolean;
   position?: number;
 }

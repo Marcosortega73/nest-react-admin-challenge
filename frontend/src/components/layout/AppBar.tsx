@@ -10,7 +10,7 @@ function AppBar() {
     <>
       <div className="appbar-container bg-[var(--brand-header-background)] flex justify-between items-center px-5 p-3 shadow-[0_8px_16px_-12px_rgba(0,0,0,0.20)] sticky top-0 w-full z-50">
         <div className="brand-logo-container">
-          <h4 className="font-semibold text-3xl">Urbano Academy</h4>
+          <h4 className="font-semibold text-2xl">Urbano Academy</h4>
         </div>
         <div className="profile-container flex items-center gap-3">
           <Avatar src={authenticatedUser?.imageUrl || myPhotoSrc} size="small" />

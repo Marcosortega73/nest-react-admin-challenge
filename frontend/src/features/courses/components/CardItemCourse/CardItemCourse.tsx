@@ -17,8 +17,12 @@ export default function CardItemCourse({ course }: CardItemCourseProps) {
     navigate(`/courses/${course.id}`);
   };
 
+  const handleCountEnrollCourse = () => {
+    return course?.enrollments?.length || 0;
+  };
+
   return (
-    <div className={styles.urbc_card}>
+    <div className={styles.urbc_card} onClick={handleViewCourse}>
       <div className={`${styles.urbc_card__shine}`}></div>
       <div className={`${styles.urbc_card__glow}`}></div>
       <div className={`${styles.urbc_card__content}`}>
@@ -40,7 +44,7 @@ export default function CardItemCourse({ course }: CardItemCourseProps) {
         <div className={`${styles.urbc_card__footer}`}>
           <div className={`${styles.urbc_card__enrollment} flex items-center gap-1`}>
             <Users />
-            10
+            {handleCountEnrollCourse()}
           </div>
           <div className={`${styles.urbc_card__enrollment}`}>
             <IconButtonComponent icon={<Eye />} shape="circle" size="sm" variant="primary" onClick={handleViewCourse} />

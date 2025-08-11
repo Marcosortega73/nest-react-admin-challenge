@@ -1,15 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
 
-import {
-  getUniqueViolationMessage,
-  isUniqueViolation,
-} from '../utils/database-error.util';
+import { getUniqueViolationMessage, isUniqueViolation } from '../utils/database-error.util';
 import {
   CreateCourseModuleDto,
   FindCourseModulesDto,
@@ -34,14 +27,9 @@ export class CourseModulesService {
     private readonly courseModuleRepository: Repository<CourseModule>,
   ) {}
 
-  async create(
-    courseId: string,
-    createCourseModuleDto: CreateCourseModuleDto,
-  ): Promise<CourseModule> {
+  async create(courseId: string, createCourseModuleDto: CreateCourseModuleDto): Promise<CourseModule> {
     try {
-      const position =
-        createCourseModuleDto.position ??
-        (await this.getNextPosition(courseId));
+      const position = createCourseModuleDto.position ?? (await this.getNextPosition(courseId));
 
       const courseModule = this.courseModuleRepository.create({
         ...createCourseModuleDto,
@@ -58,10 +46,7 @@ export class CourseModulesService {
     }
   }
 
-  async findAll(
-    courseId: string,
-    query: FindCourseModulesDto,
-  ): Promise<PaginatedResult<CourseModule>> {
+  async findAll(courseId: string, query: FindCourseModulesDto): Promise<PaginatedResult<CourseModule>> {
     const { page = 1, limit = 20, q } = query;
     const skip = (page - 1) * limit;
 
@@ -87,9 +72,9 @@ export class CourseModulesService {
     };
   }
 
-  async findOne(courseId: string, id: string): Promise<CourseModule> {
+  async findOne(id: string): Promise<CourseModule> {
     const courseModule = await this.courseModuleRepository.findOne({
-      where: { id, courseId, isDeleted: false },
+      where: { id },
     });
 
     if (!courseModule) {
@@ -99,12 +84,8 @@ export class CourseModulesService {
     return courseModule;
   }
 
-  async update(
-    courseId: string,
-    id: string,
-    updateCourseModuleDto: UpdateCourseModuleDto,
-  ): Promise<CourseModule> {
-    const courseModule = await this.findOne(courseId, id);
+  async update(id: string, updateCourseModuleDto: UpdateCourseModuleDto): Promise<CourseModule> {
+    const courseModule = await this.findOne(id);
 
     try {
       Object.assign(courseModule, updateCourseModuleDto);
@@ -117,12 +98,9 @@ export class CourseModulesService {
     }
   }
 
-  async reorder(
-    courseId: string,
-    reorderDto: ReorderCourseModulesDto,
-  ): Promise<CourseModule[]> {
+  async reorder(courseId: string, reorderDto: ReorderCourseModulesDto): Promise<CourseModule[]> {
     const { items } = reorderDto;
-    const moduleIds = items.map((item) => item.id);
+    const moduleIds = items.map(item => item.id);
 
     const courseModules = await this.courseModuleRepository.find({
       where: {
@@ -138,7 +116,7 @@ export class CourseModulesService {
 
     try {
       for (const item of items) {
-        const courseModule = courseModules.find((m) => m.id === item.id);
+        const courseModule = courseModules.find(m => m.id === item.id);
         if (courseModule) {
           courseModule.position = item.position;
         }
@@ -158,30 +136,29 @@ export class CourseModulesService {
     }
   }
 
-  async publish(courseId: string, id: string): Promise<CourseModule> {
-    const courseModule = await this.findOne(courseId, id);
+  async publish(id: string): Promise<CourseModule> {
+    const courseModule = await this.findOne(id);
     courseModule.isPublished = true;
     return await this.courseModuleRepository.save(courseModule);
   }
 
-  async unpublish(courseId: string, id: string): Promise<CourseModule> {
-    const courseModule = await this.findOne(courseId, id);
+  async unpublish(id: string): Promise<CourseModule> {
+    const courseModule = await this.findOne(id);
     courseModule.isPublished = false;
     return await this.courseModuleRepository.save(courseModule);
   }
 
-  async delete(courseId: string, id: string): Promise<void> {
-    const courseModule = await this.findOne(courseId, id);
-    courseModule.isDeleted = true;
-    await this.courseModuleRepository.save(courseModule);
+  async delete(id: string): Promise<void> {
+    const courseModule = await this.findOne(id);
+    await this.courseModuleRepository.remove(courseModule);
   }
 
   private async getNextPosition(courseId: string): Promise<number> {
+    // Get all positions (including deleted modules) to avoid conflicts
     const result = await this.courseModuleRepository
       .createQueryBuilder('courseModule')
       .select('MAX(courseModule.position)', 'maxPosition')
       .where('courseModule.courseId = :courseId', { courseId })
-      .andWhere('courseModule.isDeleted = :isDeleted', { isDeleted: false })
       .getRawOne();
 
     return (result?.maxPosition || 0) + 1;

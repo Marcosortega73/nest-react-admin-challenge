@@ -1,5 +1,5 @@
 import { getLessonIcon, openLessonContent } from '@shared/utils/lessonIconUtils';
-import { Edit3 } from 'react-feather';
+import { Edit3, Trash2 } from 'react-feather';
 
 import { CourseLesson } from '../types/course.types';
 
@@ -7,9 +7,10 @@ interface LessonCardProps {
   lesson: CourseLesson;
   canSeePublished: boolean;
   onEditLesson?: (lesson: CourseLesson) => void;
+  onDeleteLesson?: (lesson: CourseLesson) => void;
 }
 
-export default function LessonCard({ lesson, canSeePublished, onEditLesson }: LessonCardProps) {
+export default function LessonCard({ lesson, canSeePublished, onEditLesson, onDeleteLesson }: LessonCardProps) {
   const handleClick = () => {
     openLessonContent(lesson.contentUrl || lesson.html || '', lesson.title);
   };
@@ -18,6 +19,13 @@ export default function LessonCard({ lesson, canSeePublished, onEditLesson }: Le
     e.stopPropagation();
     if (onEditLesson) {
       onEditLesson(lesson);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDeleteLesson) {
+      onDeleteLesson(lesson);
     }
   };
 
@@ -44,13 +52,22 @@ export default function LessonCard({ lesson, canSeePublished, onEditLesson }: Le
               {lesson?.isPublished ? 'Published' : 'Draft'}
             </span>
           )}
-          {onEditLesson && (
+          {onEditLesson && canSeePublished && (
             <button
               onClick={handleEditClick}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
               title="Edit lesson"
             >
               <Edit3 size={16} />
+            </button>
+          )}
+          {onDeleteLesson && canSeePublished && (
+            <button
+              onClick={handleDeleteClick}
+              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+              title="Delete lesson"
+            >
+              <Trash2 size={16} />
             </button>
           )}
         </div>

@@ -1,24 +1,16 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { JwtGuard } from '../auth/guards/jwt.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../decorators/roles.decorator';
-import { Role } from '../enums/role.enum';
 import { CreateCourseDto, UpdateCourseDto } from './course.dto';
 import { Course } from './course.entity';
 import { CourseQuery } from './course.query';
 import { CourseService } from './course.service';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
+import { Role } from '../enums/role.enum';
 
 @Controller('courses')
 @ApiBearerAuth()
@@ -34,8 +26,13 @@ export class CourseController {
   }
 
   @Get()
-  async findAll(@Query() courseQuery: CourseQuery): Promise<Course[]> {
-    return await this.courseService.findAll(courseQuery);
+  async findAll(@Query() courseQuery: CourseQuery, @CurrentUser() user: AuthenticatedUser): Promise<Course[]> {
+    return await this.courseService.findAll(courseQuery, user?.role, user?.userId);
+  }
+
+  @Get('/counts')
+  async getCounts(@CurrentUser() user: AuthenticatedUser) {
+    return await this.courseService.getCounts(user?.role, user?.userId);
   }
 
   @Get('/:id')

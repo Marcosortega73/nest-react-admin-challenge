@@ -14,6 +14,15 @@ class CourseService {
     return (await apiService.get<Course[]>('/api/courses', { params: courseQuery })).data;
   }
 
+  async getCounts(): Promise<{
+    all: number;
+    myCourses: number;
+    published: number;
+    draft: number;
+  }> {
+    return (await apiService.get('/api/courses/counts')).data;
+  }
+
   async findOne(id: string): Promise<Course> {
     return (await apiService.get<Course>(`/api/courses/${id}`)).data;
   }

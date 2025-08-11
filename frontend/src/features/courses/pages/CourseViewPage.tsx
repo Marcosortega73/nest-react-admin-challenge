@@ -8,7 +8,7 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
 import CourseContent from '../components/CourseContent';
-import CourseHeader from '../components/CourseHeader';
+import { CourseHeader } from '../components/CourseHeader';
 import CourseTabs, { getAvailableTabs, TabType } from '../components/CourseTabs';
 import courseService from '../services/course.api';
 
@@ -18,10 +18,6 @@ export default function CourseViewPage() {
   const [activeTab, setActiveTab] = useState<TabType>('content');
   const { toasts, removeToast, showSuccess, showError } = useToast();
 
-  // Debug: Log toasts state
-  console.log('🍞 CourseViewPage toasts:', toasts);
-
-  // Queries para obtener datos
   const {
     data: course,
     isLoading,
@@ -30,14 +26,12 @@ export default function CourseViewPage() {
     enabled: !!id,
   });
 
-  // Usar datos reales del curso
   const enrollments = course?.enrollments || [];
   const analytics = course?.analytics || null;
 
   const userRole = authenticatedUser?.role || 'user';
   const tabs = getAvailableTabs(userRole);
 
-  // Control de visibilidad basado en roles
   const canSeePublished = authenticatedUser?.role === 'admin' || authenticatedUser?.role === 'editor';
 
   if (isLoading) {
