@@ -5,7 +5,7 @@ interface ImputCheckboxProps {
   label: string;
   name: string;
   register: UseFormRegister<any>;
-  errors: FieldErrors;
+  errors?: FieldErrors;
   className?: string;
   required?: boolean;
   rules?: any;

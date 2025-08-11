@@ -21,7 +21,7 @@ interface CourseContentProps {
   enrollments: Enrollment[];
   analytics: CourseAnalytics | null;
   canSeePublished: boolean;
-  canEditContent?: boolean; // Solo Admin/Editor pueden editar/eliminar/agregar módulos y lecciones
+  canEditContent?: boolean;
   activeTab: string;
   showSuccess: (title: string, message?: string) => void;
   showError: (title: string, message?: string) => void;
@@ -46,21 +46,17 @@ export default function CourseContent({
 }: CourseContentProps) {
   const queryClient = useQueryClient();
 
-  // Estado para el modal de edición de módulos
   const [isEditModuleModalOpen, setIsEditModuleModalOpen] = useState(false);
   const [selectedModule, setSelectedModule] = useState<any>(null);
 
-  // Estado para el modal de edición de lecciones
   const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [selectedModuleId, setSelectedModuleId] = useState<string>('');
 
-  // Estados para modales de creación
   const [isCreateModuleModalOpen, setIsCreateModuleModalOpen] = useState(false);
   const [isCreateLessonModalOpen, setIsCreateLessonModalOpen] = useState(false);
   const [createLessonModuleId, setCreateLessonModuleId] = useState<string>('');
 
-  // Estado para modales de confirmación de eliminación
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     type: 'course' | 'module' | 'lesson';
@@ -69,7 +65,6 @@ export default function CourseContent({
     message: string;
   }>({ isOpen: false, type: 'course', item: null, title: '', message: '' });
 
-  // React Hook Form setup
   const {
     register,
     handleSubmit,
@@ -114,7 +109,6 @@ export default function CourseContent({
     },
   });
 
-  // Mutaciones para eliminar módulos y lecciones
   const deleteModuleMutation = useMutation(
     ({ courseId, moduleId }: { courseId: string; moduleId: string }) => courseModuleService.delete(courseId, moduleId),
     {
@@ -166,7 +160,6 @@ export default function CourseContent({
     });
   };
 
-  // Función para manejar la edición de módulos
   const handleEditModule = (module: any) => {
     setSelectedModule(module);
     setIsEditModuleModalOpen(true);
@@ -177,7 +170,6 @@ export default function CourseContent({
     setSelectedModule(null);
   };
 
-  // Función para manejar la edición de lecciones
   const handleEditLesson = (lesson: any, moduleId: string) => {
     setSelectedLesson(lesson);
     setSelectedModuleId(moduleId);
@@ -190,7 +182,6 @@ export default function CourseContent({
     setSelectedModuleId('');
   };
 
-  // Handlers para creación de módulos y lecciones
   const handleAddModule = () => {
     setIsCreateModuleModalOpen(true);
   };
@@ -209,7 +200,6 @@ export default function CourseContent({
     setCreateLessonModuleId('');
   };
 
-  // Handlers para eliminación con confirmación
   const handleDeleteModule = (module: any) => {
     setDeleteConfirmation({
       isOpen: true,
@@ -230,7 +220,6 @@ export default function CourseContent({
     });
   };
 
-  // Handler para confirmar eliminación
   const handleConfirmDelete = () => {
     const { type, item } = deleteConfirmation;
 
@@ -242,7 +231,6 @@ export default function CourseContent({
         deleteModuleMutation.mutate({ courseId: course.id, moduleId: item.id });
         break;
       case 'lesson':
-        // Encontrar el moduleId de la lección
         const moduleId = course.modules?.find(m => m.lessons?.some(l => l.id === item.id))?.id;
         if (moduleId) {
           deleteLessonMutation.mutate({
@@ -255,7 +243,6 @@ export default function CourseContent({
     }
   };
 
-  // Handler para cancelar eliminación
   const handleCancelDelete = () => {
     setDeleteConfirmation({ isOpen: false, type: 'course', item: null, title: '', message: '' });
   };
