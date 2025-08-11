@@ -7,6 +7,7 @@ export type AuthUser = {
   email?: string;
   username?: string;
   lastName?: string;
+  imageUrl?: string;
 };
 
 type AuthCtx = {

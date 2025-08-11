@@ -1,6 +1,5 @@
 import { BookOpen, Home, LogOut, Users } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 import useAuth from '../../hooks/useAuth';
 import authService from '../../services/AuthService';
@@ -23,7 +22,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={'sidebar ' + className}>
-      <nav className="mt-5 flex flex-col gap-3 flex-grow shadow-none">
+      <nav className="mt-5 lg:mt-20 flex flex-col gap-3 flex-grow shadow-none">
         <SidebarItem to="/">
           <Home /> Dashboard
         </SidebarItem>

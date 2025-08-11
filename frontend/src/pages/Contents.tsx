@@ -1,3 +1,4 @@
+import courseService from '@features/courses/services/course.api';
 import { useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
@@ -10,7 +11,6 @@ import Modal from '../components/shared/Modal';
 import useAuth from '../hooks/useAuth';
 import CreateContentRequest from '../models/content/CreateContentRequest';
 import contentService from '../services/ContentService';
-import courseService from '../services/CourseService';
 
 export default function Contents() {
   const { id } = useParams<{ id: string }>();

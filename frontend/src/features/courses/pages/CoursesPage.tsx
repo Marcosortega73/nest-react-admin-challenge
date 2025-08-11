@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { Loader, Plus, X } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 
 import { CourseFiltersComponent } from '../components/CourseFiltersComponent';
 import { useCourses } from '../hooks/useCourses';
@@ -54,6 +55,12 @@ export default function CoursesPage() {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleAddCourse = () => {
+    navigate('/courses/new');
+  };
+
   return (
     <Layout>
       <HeaderPageCourse
@@ -63,7 +70,7 @@ export default function CoursesPage() {
           <ButtonComponent
             title="Add Course"
             icon={<Plus />}
-            onClick={() => setAddCourseShow(true)}
+            onClick={handleAddCourse}
             variant="primary"
             positionIcon="left"
             size="md"
