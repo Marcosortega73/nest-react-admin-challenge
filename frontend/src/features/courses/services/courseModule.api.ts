@@ -32,21 +32,21 @@ class CourseModuleService {
    * Actualizar un módulo específico
    */
   async update(courseId: string, moduleId: string, updateRequest: UpdateCourseModuleRequest): Promise<void> {
-    await apiService.patch(`/api/courses/${courseId}/modules/${moduleId}`, updateRequest);
+    await apiService.patch(`/api/course-modules/${moduleId}`, updateRequest);
   }
 
   /**
    * Eliminar un módulo específico
    */
   async delete(courseId: string, moduleId: string): Promise<void> {
-    await apiService.delete(`/api/courses/${courseId}/modules/${moduleId}`);
+    await apiService.delete(`/api/course-modules/${moduleId}`);
   }
 
   /**
    * Crear un nuevo módulo
    */
   async create(courseId: string, createRequest: CreateCourseModuleRequest): Promise<CourseModule> {
-    const response = await apiService.post(`/api/courses/${courseId}/modules`, createRequest);
+    const response = await apiService.post(`/api/course-modules/${courseId}/modules`, createRequest);
     return response.data;
   }
 
@@ -54,7 +54,7 @@ class CourseModuleService {
    * Obtener un módulo específico
    */
   async findOne(courseId: string, moduleId: string): Promise<CourseModule> {
-    const response = await apiService.get(`/api/courses/${courseId}/modules/${moduleId}`);
+    const response = await apiService.get(`/api/course-modules/${moduleId}`);
     return response.data;
   }
 
@@ -62,21 +62,21 @@ class CourseModuleService {
    * Publicar un módulo
    */
   async publish(courseId: string, moduleId: string): Promise<void> {
-    await apiService.patch(`/api/courses/${courseId}/modules/${moduleId}/publish`);
+    await apiService.patch(`/api/course-modules/${moduleId}/publish`);
   }
 
   /**
    * Despublicar un módulo
    */
   async unpublish(courseId: string, moduleId: string): Promise<void> {
-    await apiService.patch(`/api/courses/${courseId}/modules/${moduleId}/unpublish`);
+    await apiService.patch(`/api/course-modules/${moduleId}/unpublish`);
   }
 
   /**
    * Reordenar módulos
    */
   async reorder(courseId: string, moduleIds: string[]): Promise<void> {
-    await apiService.patch(`/api/courses/${courseId}/modules/reorder`, { moduleIds });
+    await apiService.patch(`/api/course-modules/reorder`, { moduleIds });
   }
 }
 

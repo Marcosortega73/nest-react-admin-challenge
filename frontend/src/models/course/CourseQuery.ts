@@ -1,4 +1,4 @@
 export default interface CourseQuery {
-  name?: string;
-  description?: string;
+  search?: string;
+  filter?: 'all' | 'my-courses' | 'published' | 'draft';
 }

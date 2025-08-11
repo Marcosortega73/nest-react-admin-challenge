@@ -8,6 +8,7 @@ import { CourseModule } from '../course-modules/course-module.entity';
 import { CourseLesson, LessonType } from '../course-lessons/course-lesson.entity';
 import { CourseResource, ResourceType } from '../course-resources/course-resource.entity';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { Role } from '../enums/role.enum';
 
 @Injectable()
 export class CourseService {
@@ -93,22 +94,153 @@ export class CourseService {
       });
   }
 
-  async findAll(courseQuery: CourseQuery): Promise<Course[]> {
-    Object.keys(courseQuery).forEach(key => {
-      courseQuery[key] = ILike(`%${courseQuery[key]}%`);
-    });
-    return (await Course.find({
-      where: courseQuery,
-      relations: ['modules', 'modules.lessons', 'resources'],
-      order: {
-        name: 'ASC',
-        description: 'ASC',
-      },
-    })) as Course[];
+  async findAll(courseQuery: CourseQuery, userRole?: Role, userId?: string): Promise<Course[]> {
+    // Apply filter-based logic first to determine join strategy
+    const filter = courseQuery.filter || 'all';
+    
+    
+    let queryBuilder: any;
+    
+    
+    if (filter === 'my-courses' && userId) {
+      queryBuilder = Course.createQueryBuilder('course')
+        .leftJoinAndSelect('course.modules', 'modules')
+        .leftJoinAndSelect('modules.lessons', 'lessons')
+        .leftJoinAndSelect('course.resources', 'resources')
+        .innerJoinAndSelect('course.enrollments', 'enrollments', 'enrollments.userId = :userId AND enrollments.status = :status', { 
+          userId, 
+          status: 'ACTIVE' 
+        })
+        .orderBy('course.name', 'ASC')
+        .addOrderBy('course.description', 'ASC')
+        .addOrderBy('modules.position', 'ASC')
+        .addOrderBy('lessons.position', 'ASC');
+      
+      if (userRole === Role.User) {
+        queryBuilder.andWhere('course.isPublished = :isPublished', { isPublished: true });
+      }
+    } else {
+      queryBuilder = Course.createQueryBuilder('course')
+        .leftJoinAndSelect('course.modules', 'modules')
+        .leftJoinAndSelect('modules.lessons', 'lessons')
+        .leftJoinAndSelect('course.resources', 'resources')
+        .leftJoinAndSelect('course.enrollments', 'enrollments')
+        .orderBy('course.name', 'ASC')
+        .addOrderBy('course.description', 'ASC')
+        .addOrderBy('modules.position', 'ASC')
+        .addOrderBy('lessons.position', 'ASC');
+    }
+
+    if (courseQuery.search && courseQuery.search.trim()) {
+      const searchTerm = `%${courseQuery.search.trim()}%`;
+      queryBuilder.andWhere(
+        '(course.name ILIKE :search OR course.description ILIKE :search)',
+        { search: searchTerm }
+      );
+    }
+
+    switch (filter) {
+      case 'all':
+        if (userRole === Role.User) {
+          queryBuilder
+            .andWhere('course.isPublished = :isPublished', { isPublished: true })
+            .andWhere('modules.id IS NOT NULL')
+            .andWhere('lessons.id IS NOT NULL');
+        }
+        break;
+
+      case 'my-courses':
+        break;
+
+      case 'published':
+        if (userRole !== Role.User) {
+          queryBuilder.andWhere('course.isPublished = :isPublished', { isPublished: true });
+        }
+        break;
+
+      case 'draft':
+        if (userRole !== Role.User) {
+          queryBuilder.andWhere('course.isPublished = :isPublished', { isPublished: false });
+        }
+        break;
+    }
+
+    const courses = await queryBuilder.getMany();
+
+    if (userRole === Role.User && filter === 'all') {
+      const filteredCourses = courses.filter(course => 
+        course.modules && 
+        course.modules.length > 0 && 
+        course.modules.some(module => module.lessons && module.lessons.length > 0)
+      );
+      return filteredCourses;
+    }
+
+    return courses;
+  }
+
+  async getCounts(userRole?: Role, userId?: string) {
+    // Base query for counting
+    const baseQuery = Course.createQueryBuilder('course')
+      .leftJoinAndSelect('course.modules', 'modules')
+      .leftJoinAndSelect('modules.lessons', 'lessons')
+      .leftJoinAndSelect('course.enrollments', 'enrollments');
+
+    // Count all courses (respecting user role)
+    let allQuery = baseQuery.clone();
+    if (userRole === Role.User) {
+      allQuery = allQuery
+        .andWhere('course.isPublished = :isPublished', { isPublished: true });
+    }
+    const allCourses = await allQuery.getMany();
+    const allCount = userRole === Role.User 
+      ? allCourses.filter(course => 
+          course.modules && 
+          course.modules.length > 0 && 
+          course.modules.some(module => module.lessons && module.lessons.length > 0)
+        ).length
+      : allCourses.length;
+
+    // Count my courses (enrolled courses)
+    let myCoursesCount = 0;
+    if (userId) {
+      const myCoursesQuery = baseQuery.clone()
+        .andWhere('enrollments.userId = :userId', { userId });
+      const myCourses = await myCoursesQuery.getMany();
+      myCoursesCount = myCourses.length;
+    }
+
+    // Count published courses (only for admin/editor)
+    let publishedCount = 0;
+    if (userRole !== Role.User) {
+      const publishedQuery = baseQuery.clone()
+        .andWhere('course.isPublished = :isPublished', { isPublished: true });
+      const publishedCourses = await publishedQuery.getMany();
+      publishedCount = publishedCourses.length;
+    }
+
+    // Count draft courses (only for admin/editor)
+    let draftCount = 0;
+    if (userRole !== Role.User) {
+      const draftQuery = baseQuery.clone()
+        .andWhere('course.isPublished = :isPublished', { isPublished: false });
+      const draftCourses = await draftQuery.getMany();
+      draftCount = draftCourses.length;
+    }
+
+    return {
+      all: allCount,
+      myCourses: myCoursesCount,
+      published: publishedCount,
+      draft: draftCount,
+    };
   }
 
   async findById(id: string): Promise<Course> {
-    const course = await Course.findOne({ where: { id }, relations: ['modules', 'modules.lessons', 'resources'] });
+    const course = await Course.findOne({ 
+      where: { id }, 
+      relations: ['modules', 'modules.lessons', 'resources', 'enrollments'] 
+    });
     if (!course) {
       throw new HttpException(`Could not find course with matching id ${id}`, HttpStatus.NOT_FOUND);
     }

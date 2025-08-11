@@ -1,15 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, In, Repository } from 'typeorm';
 
-import {
-  getUniqueViolationMessage,
-  isUniqueViolation,
-} from '../utils/database-error.util';
+import { getUniqueViolationMessage, isUniqueViolation } from '../utils/database-error.util';
 import {
   CreateCourseLessonDto,
   FindCourseLessonsDto,
@@ -34,16 +27,11 @@ export class CourseLessonsService {
     private readonly courseLessonRepository: Repository<CourseLesson>,
   ) {}
 
-  async create(
-    moduleId: string,
-    createCourseLessonDto: CreateCourseLessonDto,
-  ): Promise<CourseLesson> {
+  async create(moduleId: string, createCourseLessonDto: CreateCourseLessonDto): Promise<CourseLesson> {
     this.validateLessonContent(createCourseLessonDto);
 
     try {
-      const position =
-        createCourseLessonDto.position ??
-        (await this.getNextPosition(moduleId));
+      const position = createCourseLessonDto.position ?? (await this.getNextPosition(moduleId));
 
       const courseLesson = this.courseLessonRepository.create({
         ...createCourseLessonDto,
@@ -60,10 +48,7 @@ export class CourseLessonsService {
     }
   }
 
-  async findAll(
-    moduleId: string,
-    query: FindCourseLessonsDto,
-  ): Promise<PaginatedResult<CourseLesson>> {
+  async findAll(moduleId: string, query: FindCourseLessonsDto): Promise<PaginatedResult<CourseLesson>> {
     const { page = 1, limit = 20, q } = query;
     const skip = (page - 1) * limit;
 
@@ -98,10 +83,7 @@ export class CourseLessonsService {
     return courseLesson;
   }
 
-  async update(
-    id: string,
-    updateCourseLessonDto: UpdateCourseLessonDto,
-  ): Promise<CourseLesson> {
+  async update(id: string, updateCourseLessonDto: UpdateCourseLessonDto): Promise<CourseLesson> {
     const courseLesson = await this.findOne(id);
 
     // Validar contenido si se está actualizando el tipo o contenido
@@ -119,12 +101,9 @@ export class CourseLessonsService {
     }
   }
 
-  async reorder(
-    moduleId: string,
-    reorderDto: ReorderCourseLessonsDto,
-  ): Promise<CourseLesson[]> {
+  async reorder(moduleId: string, reorderDto: ReorderCourseLessonsDto): Promise<CourseLesson[]> {
     const { items } = reorderDto;
-    const lessonIds = items.map((item) => item.id);
+    const lessonIds = items.map(item => item.id);
 
     const courseLessons = await this.courseLessonRepository.find({
       where: {
@@ -138,7 +117,7 @@ export class CourseLessonsService {
 
     try {
       for (const item of items) {
-        const courseLesson = courseLessons.find((l) => l.id === item.id);
+        const courseLesson = courseLessons.find(l => l.id === item.id);
         if (courseLesson) {
           courseLesson.position = item.position;
         }
@@ -173,22 +152,16 @@ export class CourseLessonsService {
     return (result?.maxPosition || 0) + 1;
   }
 
-  private validateLessonContent(
-    lessonData: CreateCourseLessonDto | UpdateCourseLessonDto | any,
-  ): void {
+  private validateLessonContent(lessonData: CreateCourseLessonDto | UpdateCourseLessonDto | any): void {
     const { type, html, contentUrl } = lessonData;
 
     if (type === LessonType.TEXT) {
       if (!html || html.trim() === '') {
-        throw new BadRequestException(
-          'HTML content is required for TEXT type lessons',
-        );
+        throw new BadRequestException('HTML content is required for TEXT type lessons');
       }
     } else {
       if (!contentUrl || contentUrl.trim() === '') {
-        throw new BadRequestException(
-          'Content URL is required for non-TEXT type lessons',
-        );
+        throw new BadRequestException('Content URL is required for non-TEXT type lessons');
       }
     }
   }

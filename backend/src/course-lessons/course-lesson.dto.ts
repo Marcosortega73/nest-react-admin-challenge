@@ -36,6 +36,10 @@ export class CreateCourseLessonDto {
   position?: number;
 
   @IsNotEmpty()
+  @IsUUID()
+  moduleId: string;
+
+  @IsNotEmpty()
   @IsEnum(LessonType)
   type: LessonType;
 

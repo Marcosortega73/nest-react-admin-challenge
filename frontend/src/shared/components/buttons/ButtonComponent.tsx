@@ -17,6 +17,7 @@ interface ButtonComponentProps {
   variant?: Variant;
   type?: 'button' | 'submit' | 'reset';
   size?: 'sm' | 'md' | 'lg';
+  badge?: number | string;
 }
 
 const cn = (...classes: Array<string | false | null | undefined>) => classes.filter(Boolean).join(' ');
@@ -37,6 +38,7 @@ export function ButtonComponent({
   variant = 'primary',
   type = 'button',
   size = 'md',
+  badge,
 }: ButtonComponentProps) {
   const iconLeft = positionIcon === 'left' && icon ? <span className="mr-2 inline-flex">{icon}</span> : null;
 
@@ -60,6 +62,11 @@ export function ButtonComponent({
       {iconLeft}
       <span className="font-semibold">{title}</span>
       {iconRight}
+      {badge !== undefined && (
+        <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none rounded-full bg-[var(--brand-text-secondary)] text-[var(--brand-text-primary)]">
+          {badge}
+        </span>
+      )}
     </button>
   );
 }

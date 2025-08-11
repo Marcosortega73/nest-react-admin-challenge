@@ -40,11 +40,10 @@ export class CourseLessonsController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.Admin, Role.Editor)
   async create(
-    @Param('moduleId') moduleId: string,
     @Body() createCourseLessonDto: CreateCourseLessonDto,
   ): Promise<CourseLesson> {
     return await this.courseLessonsService.create(
-      moduleId,
+      createCourseLessonDto.moduleId,
       createCourseLessonDto,
     );
   }

@@ -8,6 +8,7 @@
   #root {
     @apply h-full;
     --brand-primary: #c1292e;
+    --brand-secondary: #e2e1e1;
     --brand-background: #ffffff;
     --brand-active: #c1292e;
     --brand-header-background: #e2e1e1;

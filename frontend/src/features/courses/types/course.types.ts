@@ -28,7 +28,10 @@ export interface Enrollment {
   dateEnrolled: Date;
 }
 
-export type FindCoursesParams = Partial<Pick<Course, 'name' | 'description'>>;
+export type FindCoursesParams = {
+  search?: string;
+  filter?: 'all' | 'my-courses' | 'published' | 'draft';
+};
 
 export interface CreateCourseRequest {
   name: string;

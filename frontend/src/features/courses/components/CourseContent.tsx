@@ -1,12 +1,17 @@
 import { ButtonComponent } from '@shared/components/buttons';
+import { ConfirmationModal } from '@shared/components/modals';
 import { useState } from 'react';
-import { Book, Loader } from 'react-feather';
+import { Book, Loader, Plus } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
 
 import courseService from '../services/course.api';
+import courseLessonService from '../services/courseLesson.api';
+import courseModuleService from '../services/courseModule.api';
 import { Course, CourseAnalytics, Enrollment, UpdateCourseRequest } from '../types/course.types';
 import EmptyState from './EmptyState';
+import CreateLessonModal from './modals/CreateLessonModal';
+import CreateModuleModal from './modals/CreateModuleModal';
 import EditLessonModal from './modals/EditLessonModal';
 import EditModuleModal from './modals/EditModuleModal';
 import ModuleCard from './ModuleCard';
@@ -16,6 +21,7 @@ interface CourseContentProps {
   enrollments: Enrollment[];
   analytics: CourseAnalytics | null;
   canSeePublished: boolean;
+  canEditContent?: boolean; // Solo Admin/Editor pueden editar/eliminar/agregar módulos y lecciones
   activeTab: string;
   showSuccess: (title: string, message?: string) => void;
   showError: (title: string, message?: string) => void;
@@ -33,6 +39,7 @@ export default function CourseContent({
   enrollments,
   analytics,
   canSeePublished,
+  canEditContent = false,
   activeTab,
   showSuccess,
   showError,
@@ -47,6 +54,20 @@ export default function CourseContent({
   const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [selectedModuleId, setSelectedModuleId] = useState<string>('');
+
+  // Estados para modales de creación
+  const [isCreateModuleModalOpen, setIsCreateModuleModalOpen] = useState(false);
+  const [isCreateLessonModalOpen, setIsCreateLessonModalOpen] = useState(false);
+  const [createLessonModuleId, setCreateLessonModuleId] = useState<string>('');
+
+  // Estado para modales de confirmación de eliminación
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    type: 'course' | 'module' | 'lesson';
+    item: any;
+    title: string;
+    message: string;
+  }>({ isOpen: false, type: 'course', item: null, title: '', message: '' });
 
   // React Hook Form setup
   const {
@@ -93,6 +114,38 @@ export default function CourseContent({
     },
   });
 
+  // Mutaciones para eliminar módulos y lecciones
+  const deleteModuleMutation = useMutation(
+    ({ courseId, moduleId }: { courseId: string; moduleId: string }) => courseModuleService.delete(courseId, moduleId),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['course', course.id]);
+        showSuccess('Module Deleted', 'The module has been deleted successfully.');
+        setDeleteConfirmation({ isOpen: false, type: 'course', item: null, title: '', message: '' });
+      },
+      onError: error => {
+        console.error('Error deleting module:', error);
+        showError('Delete Failed', 'There was an error deleting the module. Please try again.');
+      },
+    },
+  );
+
+  const deleteLessonMutation = useMutation(
+    ({ courseId, moduleId, lessonId }: { courseId: string; moduleId: string; lessonId: string }) =>
+      courseLessonService.delete(courseId, moduleId, lessonId),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['course', course.id]);
+        showSuccess('Lesson Deleted', 'The lesson has been deleted successfully.');
+        setDeleteConfirmation({ isOpen: false, type: 'course', item: null, title: '', message: '' });
+      },
+      onError: error => {
+        console.error('Error deleting lesson:', error);
+        showError('Delete Failed', 'There was an error deleting the lesson. Please try again.');
+      },
+    },
+  );
+
   const onSubmit = (formData: CourseFormData) => {
     const processedData: UpdateCourseRequest = {
       name: formData.name,
@@ -104,9 +157,13 @@ export default function CourseContent({
   };
 
   const handleDeleteCourse = () => {
-    if (window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
-      deleteCourseMutation.mutate(course.id);
-    }
+    setDeleteConfirmation({
+      isOpen: true,
+      type: 'course',
+      item: course,
+      title: 'Delete Course',
+      message: `Are you sure you want to delete "${course.name}"? This action cannot be undone and will permanently remove all modules, lessons, and associated data.`,
+    });
   };
 
   // Función para manejar la edición de módulos
@@ -127,20 +184,104 @@ export default function CourseContent({
     setIsEditLessonModalOpen(true);
   };
 
-  const handleCloseLessonModal = () => {
+  const handleCloseEditLessonModal = () => {
     setIsEditLessonModalOpen(false);
     setSelectedLesson(null);
     setSelectedModuleId('');
   };
 
+  // Handlers para creación de módulos y lecciones
+  const handleAddModule = () => {
+    setIsCreateModuleModalOpen(true);
+  };
+
+  const handleCloseCreateModuleModal = () => {
+    setIsCreateModuleModalOpen(false);
+  };
+
+  const handleAddLesson = (moduleId: string) => {
+    setCreateLessonModuleId(moduleId);
+    setIsCreateLessonModalOpen(true);
+  };
+
+  const handleCloseCreateLessonModal = () => {
+    setIsCreateLessonModalOpen(false);
+    setCreateLessonModuleId('');
+  };
+
+  // Handlers para eliminación con confirmación
+  const handleDeleteModule = (module: any) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      type: 'module',
+      item: module,
+      title: 'Delete Module',
+      message: `Are you sure you want to delete "${module.title}"? This action cannot be undone and will permanently remove all lessons within this module.`,
+    });
+  };
+
+  const handleDeleteLesson = (lesson: any) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      type: 'lesson',
+      item: lesson,
+      title: 'Delete Lesson',
+      message: `Are you sure you want to delete "${lesson.title}"? This action cannot be undone.`,
+    });
+  };
+
+  // Handler para confirmar eliminación
+  const handleConfirmDelete = () => {
+    const { type, item } = deleteConfirmation;
+
+    switch (type) {
+      case 'course':
+        deleteCourseMutation.mutate(item.id);
+        break;
+      case 'module':
+        deleteModuleMutation.mutate({ courseId: course.id, moduleId: item.id });
+        break;
+      case 'lesson':
+        // Encontrar el moduleId de la lección
+        const moduleId = course.modules?.find(m => m.lessons?.some(l => l.id === item.id))?.id;
+        if (moduleId) {
+          deleteLessonMutation.mutate({
+            courseId: course.id,
+            moduleId,
+            lessonId: item.id,
+          });
+        }
+        break;
+    }
+  };
+
+  // Handler para cancelar eliminación
+  const handleCancelDelete = () => {
+    setDeleteConfirmation({ isOpen: false, type: 'course', item: null, title: '', message: '' });
+  };
+
   const renderContent = () => {
     return (
       <div className="space-y-8">
+        {/* Add Module Button */}
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-900">Course Modules</h2>
+          {canSeePublished && (
+            <ButtonComponent
+              title="Add Module"
+              icon={<Plus size={16} />}
+              variant="primary"
+              onClick={handleAddModule}
+              className="flex items-center gap-2"
+            />
+          )}
+        </div>
+
         {!course.modules || course.modules.length === 0 ? (
           <EmptyState
             icon={<Book className="mx-auto h-12 w-12 text-gray-400" />}
             title="No modules yet"
-            description="This course doesn't have any modules yet."
+            description="This course doesn't have any modules yet. Click 'Add Module' to get started."
           />
         ) : (
           course.modules.map((module, moduleIndex) => (
@@ -151,6 +292,9 @@ export default function CourseContent({
               canSeePublished={canSeePublished}
               onEditModule={handleEditModule}
               onEditLesson={handleEditLesson}
+              onDeleteModule={handleDeleteModule}
+              onDeleteLesson={handleDeleteLesson}
+              onAddLesson={handleAddLesson}
             />
           ))
         )}
@@ -369,7 +513,50 @@ export default function CourseContent({
         courseId={course.id}
         moduleId={selectedModuleId}
         lesson={selectedLesson}
-        onClose={handleCloseLessonModal}
+        onClose={handleCloseEditLessonModal}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={deleteConfirmation.title}
+        message={deleteConfirmation.message}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={deleteCourseMutation.isLoading || deleteModuleMutation.isLoading || deleteLessonMutation.isLoading}
+      />
+
+      {/* Create Module Modal */}
+      <CreateModuleModal
+        isOpen={isCreateModuleModalOpen}
+        onClose={handleCloseCreateModuleModal}
+        courseId={course.id}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+
+      {/* Create Lesson Modal */}
+      <CreateLessonModal
+        isOpen={isCreateLessonModalOpen}
+        onClose={handleCloseCreateLessonModal}
+        courseId={course.id}
+        moduleId={createLessonModuleId}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+
+      {/* Edit Lesson Modal */}
+      <EditLessonModal
+        isOpen={isEditLessonModalOpen}
+        onClose={handleCloseEditLessonModal}
+        courseId={course.id}
+        moduleId={selectedModuleId}
+        lesson={selectedLesson}
         showSuccess={showSuccess}
         showError={showError}
       />
