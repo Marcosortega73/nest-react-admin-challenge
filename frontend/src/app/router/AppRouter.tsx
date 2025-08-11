@@ -1,7 +1,7 @@
 import { CoursesLayout } from '@features/courses/components';
 import CoursesPage from '@features/courses/pages/CoursesPage';
+import CourseViewPage from '@features/courses/pages/CourseViewPage';
 import CourseWizardPage from '@features/courses/pages/CourseWizardPage';
-import Contents from '@pages/Contents';
 import Dashboard from '@pages/Dashboard';
 import Login from '@pages/Login';
 import Users from '@pages/Users';
@@ -39,7 +39,7 @@ export default function AppRouter() {
         >
           <Route index element={<CoursesPage />} /> {/* /courses */}
           <Route path="new" element={<CourseWizardPage />} /> {/* /courses/new */}
-          <Route path=":id" element={<Contents />} /> {/* /courses/:id */}
+          <Route path=":id" element={<CourseViewPage />} /> {/* /courses/:id */}
           <Route path=":id/edit" element={<CourseWizardPage />} /> {/* /courses/:id/edit */}
         </Route>
 
