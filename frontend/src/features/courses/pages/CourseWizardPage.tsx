@@ -86,6 +86,25 @@ export default function CourseWizardPage() {
     const createCourseRequest: CreateCourseRequest = {
       name: formData.name,
       description: formData.description,
+      imageUrl: formData.imageUrl,
+      isPublished: formData.isPublished,
+      modules: formData.modules?.map((module: any) => ({
+        title: module.title,
+        description: module.description,
+        isPublished: module.isPublished,
+      })),
+      resources: formData.resources?.map((resource: any) => ({
+        name: resource.name,
+        type: resource.type,
+        url: resource.url,
+        isPublished: resource.isPublished,
+      })),
+      lessons: formData.lessons?.map((lesson: any) => ({
+        title: lesson.title,
+        content: lesson.content,
+        moduleIndex: lesson.moduleIndex,
+        isPublished: lesson.isPublished,
+      })),
     };
 
     createCourseMutation.mutate(createCourseRequest);

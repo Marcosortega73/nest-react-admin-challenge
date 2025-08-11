@@ -50,9 +50,7 @@ export class CreateCourseResourceDto {
   isActive?: boolean;
 }
 
-export class UpdateCourseResourceDto extends PartialType(
-  CreateCourseResourceDto,
-) {}
+export class UpdateCourseResourceDto extends PartialType(CreateCourseResourceDto) {}
 
 export class FindCourseResourcesDto {
   @IsOptional()

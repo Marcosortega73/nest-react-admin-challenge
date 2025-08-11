@@ -60,7 +60,10 @@ export class CreateCourseLessonDto {
   isPreview?: boolean;
 }
 
-export class UpdateCourseLessonDto extends PartialType(CreateCourseLessonDto) {}
+export class UpdateCourseLessonDto extends PartialType(CreateCourseLessonDto) {
+  moduleIndex: number;
+  isPublished: boolean;
+}
 
 export class FindCourseLessonsDto {
   @IsOptional()
