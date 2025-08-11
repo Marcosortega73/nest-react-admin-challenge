@@ -86,9 +86,9 @@ export class CourseLessonsService {
     };
   }
 
-  async findOne(moduleId: string, id: string): Promise<CourseLesson> {
+  async findOne(id: string): Promise<CourseLesson> {
     const courseLesson = await this.courseLessonRepository.findOne({
-      where: { id, moduleId },
+      where: { id },
     });
 
     if (!courseLesson) {
@@ -99,11 +99,10 @@ export class CourseLessonsService {
   }
 
   async update(
-    moduleId: string,
     id: string,
     updateCourseLessonDto: UpdateCourseLessonDto,
   ): Promise<CourseLesson> {
-    const courseLesson = await this.findOne(moduleId, id);
+    const courseLesson = await this.findOne(id);
 
     // Validar contenido si se está actualizando el tipo o contenido
     const updatedLesson = { ...courseLesson, ...updateCourseLessonDto };
@@ -130,7 +129,6 @@ export class CourseLessonsService {
     const courseLessons = await this.courseLessonRepository.find({
       where: {
         id: In(lessonIds),
-        moduleId,
       },
     });
 
@@ -160,8 +158,8 @@ export class CourseLessonsService {
     }
   }
 
-  async delete(moduleId: string, id: string): Promise<void> {
-    const courseLesson = await this.findOne(moduleId, id);
+  async delete(id: string): Promise<void> {
+    const courseLesson = await this.findOne(id);
     await this.courseLessonRepository.delete(courseLesson.id);
   }
 

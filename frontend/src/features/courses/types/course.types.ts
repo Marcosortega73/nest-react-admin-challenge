@@ -78,6 +78,7 @@ export interface CourseLesson {
   html?: string;
   durationSec?: number;
   isPreview: boolean;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }

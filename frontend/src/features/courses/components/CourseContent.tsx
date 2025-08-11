@@ -1,4 +1,5 @@
 import { ButtonComponent } from '@shared/components/buttons';
+import { useState } from 'react';
 import { Book, Loader } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
@@ -6,6 +7,8 @@ import { useMutation, useQueryClient } from 'react-query';
 import courseService from '../services/course.api';
 import { Course, CourseAnalytics, Enrollment, UpdateCourseRequest } from '../types/course.types';
 import EmptyState from './EmptyState';
+import EditLessonModal from './modals/EditLessonModal';
+import EditModuleModal from './modals/EditModuleModal';
 import ModuleCard from './ModuleCard';
 
 interface CourseContentProps {
@@ -35,6 +38,15 @@ export default function CourseContent({
   showError,
 }: CourseContentProps) {
   const queryClient = useQueryClient();
+
+  // Estado para el modal de edición de módulos
+  const [isEditModuleModalOpen, setIsEditModuleModalOpen] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<any>(null);
+
+  // Estado para el modal de edición de lecciones
+  const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedModuleId, setSelectedModuleId] = useState<string>('');
 
   // React Hook Form setup
   const {
@@ -97,6 +109,30 @@ export default function CourseContent({
     }
   };
 
+  // Función para manejar la edición de módulos
+  const handleEditModule = (module: any) => {
+    setSelectedModule(module);
+    setIsEditModuleModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModuleModalOpen(false);
+    setSelectedModule(null);
+  };
+
+  // Función para manejar la edición de lecciones
+  const handleEditLesson = (lesson: any, moduleId: string) => {
+    setSelectedLesson(lesson);
+    setSelectedModuleId(moduleId);
+    setIsEditLessonModalOpen(true);
+  };
+
+  const handleCloseLessonModal = () => {
+    setIsEditLessonModalOpen(false);
+    setSelectedLesson(null);
+    setSelectedModuleId('');
+  };
+
   const renderContent = () => {
     return (
       <div className="space-y-8">
@@ -108,7 +144,14 @@ export default function CourseContent({
           />
         ) : (
           course.modules.map((module, moduleIndex) => (
-            <ModuleCard key={moduleIndex} module={module} moduleIndex={moduleIndex} canSeePublished={canSeePublished} />
+            <ModuleCard
+              key={moduleIndex}
+              module={module}
+              moduleIndex={moduleIndex}
+              canSeePublished={canSeePublished}
+              onEditModule={handleEditModule}
+              onEditLesson={handleEditLesson}
+            />
           ))
         )}
       </div>
@@ -291,16 +334,45 @@ export default function CourseContent({
   };
 
   // Render content based on active tab
-  switch (activeTab) {
-    case 'content':
-      return renderContent();
-    case 'members':
-      return renderMembers();
-    case 'settings':
-      return renderSettings();
-    case 'analytics':
-      return renderAnalytics();
-    default:
-      return renderContent();
-  }
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'content':
+        return renderContent();
+      case 'members':
+        return renderMembers();
+      case 'settings':
+        return renderSettings();
+      case 'analytics':
+        return renderAnalytics();
+      default:
+        return renderContent();
+    }
+  };
+
+  return (
+    <>
+      {renderTabContent()}
+
+      {/* Modal de edición de módulos */}
+      <EditModuleModal
+        isOpen={isEditModuleModalOpen}
+        courseId={course.id}
+        module={selectedModule}
+        onClose={handleCloseEditModal}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+
+      {/* Modal de edición de lecciones */}
+      <EditLessonModal
+        isOpen={isEditLessonModalOpen}
+        courseId={course.id}
+        moduleId={selectedModuleId}
+        lesson={selectedLesson}
+        onClose={handleCloseLessonModal}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+    </>
+  );
 }

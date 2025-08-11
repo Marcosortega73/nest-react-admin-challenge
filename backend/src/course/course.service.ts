@@ -64,7 +64,7 @@ export class CourseService {
             contentUrl: l.content?.trim(),
             position: pos,
             type: LessonType.LINK,
-            isPreview: l.isPublished ?? false,
+            isPublished: l.isPublished ?? l.isPublished ?? false,
             module: m,
           });
         });
