@@ -1,4 +1,4 @@
-import { Book } from 'react-feather';
+import { Book, Edit3 } from 'react-feather';
 
 import { CourseModule } from '../types/course.types';
 import EmptyState from './EmptyState';
@@ -8,9 +8,17 @@ interface ModuleCardProps {
   module: CourseModule;
   moduleIndex: number;
   canSeePublished: boolean;
+  onEditModule?: (module: CourseModule) => void;
+  onEditLesson?: (lesson: any, moduleId: string) => void;
 }
 
-export default function ModuleCard({ module, moduleIndex, canSeePublished }: ModuleCardProps) {
+export default function ModuleCard({
+  module,
+  moduleIndex,
+  canSeePublished,
+  onEditModule,
+  onEditLesson,
+}: ModuleCardProps) {
   return (
     <div className="space-y-4">
       {/* Module Title */}
@@ -18,15 +26,26 @@ export default function ModuleCard({ module, moduleIndex, canSeePublished }: Mod
         <h2 className="text-xl font-bold text-gray-900">
           Module {module.position || moduleIndex + 1}: {module.title}
         </h2>
-        {canSeePublished && (
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              module.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-            }`}
-          >
-            {module.isPublished ? 'Published' : 'Draft'}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {onEditModule && (
+            <button
+              onClick={() => onEditModule(module)}
+              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+              title="Edit module"
+            >
+              <Edit3 size={16} />
+            </button>
+          )}
+          {canSeePublished && (
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                module.isPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+              }`}
+            >
+              {module.isPublished ? 'Published' : 'Draft'}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Module Description */}
@@ -36,7 +55,12 @@ export default function ModuleCard({ module, moduleIndex, canSeePublished }: Mod
       {module.lessons && module.lessons.length > 0 ? (
         <div className="grid gap-3">
           {module.lessons.map((lesson, lessonIndex) => (
-            <LessonCard key={lessonIndex} lesson={lesson} canSeePublished={canSeePublished} />
+            <LessonCard
+              key={lessonIndex}
+              lesson={lesson}
+              canSeePublished={canSeePublished}
+              onEditLesson={onEditLesson ? lesson => onEditLesson(lesson, module.id) : undefined}
+            />
           ))}
         </div>
       ) : (

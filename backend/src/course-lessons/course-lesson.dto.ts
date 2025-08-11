@@ -57,7 +57,7 @@ export class CreateCourseLessonDto {
 
   @IsOptional()
   @IsBoolean()
-  isPreview?: boolean;
+  isPublished?: boolean;
 }
 
 export class UpdateCourseLessonDto extends PartialType(CreateCourseLessonDto) {
