@@ -35,9 +35,9 @@ export default function SelectField({
 
   return (
     <div className="space-y-1">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={name} className="block text-sm font-semibold text-[var(--brand-text-accent)]">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-[var(--brand-text-accent)] ml-1">*</span>}
       </label>
 
       <select

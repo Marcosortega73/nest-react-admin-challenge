@@ -55,8 +55,8 @@ export const CourseHeader: React.FC<CourseHeaderProps> = ({ course, onEnrollment
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 mb-6">
-      <div className="py-6">
+    <div className="bg-white border-b border-gray-200 mb-6 px-6 py-3 rounded-md shadow-md">
+      <div className="">
         <div className="flex items-center justify-between mb-4">
           <ButtonComponent
             onClick={() => navigate('/courses')}

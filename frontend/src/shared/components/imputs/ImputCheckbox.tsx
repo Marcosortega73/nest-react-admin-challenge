@@ -27,7 +27,7 @@ export function ImputCheckbox({
   return (
     <div className="grid items-start gap-1">
       {/* Label principal como los otros inputs */}
-      <label className="text-sm text-gray-400 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mt-1">
+      <label className="text-sm text-[var(--brand-text-accent)] font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mt-1">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>

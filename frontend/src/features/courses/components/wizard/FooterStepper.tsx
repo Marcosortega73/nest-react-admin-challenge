@@ -17,8 +17,14 @@ export default function FooterStepper({ onNext, onBack, step, onSubmit }: Footer
     if (ok) onNext();
   };
   return (
-    <div className="flex items-center justify-between p-5 border-t border-gray-200 sticky bottom-0 bg-white z-50 w-full">
-      <ButtonComponent title="Back" variant="secondary" size="md" icon={<ArrowLeft />} onClick={onBack} />
+    <div
+      className={`flex items-center ${
+        step !== 1 ? 'justify-between' : 'justify-end'
+      } p-5 border-t border-gray-200 sticky bottom-0 bg-white z-50 w-full`}
+    >
+      {step !== 1 && (
+        <ButtonComponent title="Back" variant="secondary" size="md" icon={<ArrowLeft />} onClick={onBack} />
+      )}
       <ButtonComponent
         title={step === 4 ? 'Save' : 'Next'}
         variant="primary"

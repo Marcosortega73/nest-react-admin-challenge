@@ -73,6 +73,7 @@ describe('CourseLessonsService', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         durationSec: 300,
+        moduleId,
       };
 
       const queryBuilder = {
@@ -107,6 +108,7 @@ describe('CourseLessonsService', () => {
         title: 'Text Lesson',
         type: LessonType.TEXT,
         html: '<p>Lesson content</p>',
+        moduleId,
       };
 
       const queryBuilder = {
@@ -140,6 +142,7 @@ describe('CourseLessonsService', () => {
       const createDto: CreateCourseLessonDto = {
         title: 'Invalid Text Lesson',
         type: LessonType.TEXT,
+        moduleId,
         // html is missing
       };
 
@@ -155,6 +158,7 @@ describe('CourseLessonsService', () => {
       const createDto: CreateCourseLessonDto = {
         title: 'Invalid Video Lesson',
         type: LessonType.VIDEO,
+        moduleId,
         // contentUrl is missing
       };
 
@@ -172,6 +176,7 @@ describe('CourseLessonsService', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         position: 1,
+        moduleId,
       };
 
       const uniqueError = new QueryFailedError('query', [], {

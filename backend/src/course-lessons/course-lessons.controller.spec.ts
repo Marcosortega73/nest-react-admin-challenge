@@ -78,13 +78,14 @@ describe('CourseLessonsController', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         durationSec: 300,
+        moduleId,
       };
 
       service.create.mockResolvedValue(mockCourseLesson);
 
-      const result = await controller.create(moduleId, createDto);
+      const result = await controller.create(createDto);
 
-      expect(service.create).toHaveBeenCalledWith(moduleId, createDto);
+      expect(service.create).toHaveBeenCalledWith(createDto.moduleId, createDto);
       expect(result).toBe(mockCourseLesson);
     });
   });

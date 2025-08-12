@@ -5,7 +5,7 @@ interface ImputTextFieldProps {
   label: string;
   name: string;
   register: UseFormRegister<any>;
-  errors: FieldErrors;
+  errors?: FieldErrors;
   clearErrors?: UseFormClearErrors<any>;
   type?: string;
   placeholder?: string;
@@ -14,6 +14,7 @@ interface ImputTextFieldProps {
   rows?: number;
   required?: boolean;
   rules?: any;
+  disabled?: boolean;
 }
 
 export function ImputTextField({
@@ -29,6 +30,7 @@ export function ImputTextField({
   rows = 1,
   required = false,
   rules,
+  disabled = false,
 }: ImputTextFieldProps) {
   // Función helper para acceder a errores anidados
   const getNestedError = (errors: any, path: string) => {
@@ -52,13 +54,14 @@ export function ImputTextField({
 
   return (
     <div className="grid items-center gap-2">
-      <label className="text-sm text-gray-400 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+      <label className="text-sm text-[var(--brand-text-accent)] font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
         {label}
       </label>
       {multiline ? (
         <textarea
           placeholder={placeholder}
           required={required}
+          disabled={disabled}
           {...registrationProps}
           onChange={handleInputChange}
           className={cn(
@@ -71,16 +74,17 @@ export function ImputTextField({
         <input
           placeholder={placeholder}
           required={required}
+          disabled={disabled}
           type={type}
           {...registrationProps}
           onChange={handleInputChange}
           className={cn(
-            'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 focus-visible:ring-offset-1 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50',
+            'flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-300 focus-visible:ring-offset-1 focus:border-gray-300 disabled:cursor-not-allowed disabled:opacity-50',
             className,
           )}
         />
       )}
-      {getNestedError(errors, name) && (
+      {errors && getNestedError(errors, name) && (
         <p className="text-red-600 text-sm mt-1">{String(getNestedError(errors, name)?.message)}</p>
       )}
     </div>
