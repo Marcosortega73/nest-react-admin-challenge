@@ -49,7 +49,6 @@ export const openLessonContent = (content?: string, title?: string) => {
   if (detectedType === 'LINK' || detectedType === 'PDF') {
     window.open(content, '_blank');
   } else {
-    // Para VIDEO y TEXT, podrías implementar un modal o navegación interna
-    console.log(`Opening ${detectedType} lesson: ${title}`, content);
+    console.warn(`Opening ${detectedType} lesson: ${title}`, content);
   }
 };

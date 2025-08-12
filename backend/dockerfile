@@ -24,7 +24,7 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY package.json yarn.lock ormconfig.js ./
+COPY package.json yarn.lock ./
 
 COPY --from=build /app/node_modules ./node_modules
 
