@@ -1,37 +1,33 @@
-# ---------- Build stage ----------
-
-FROM node:20-alpine AS build
-
+# Base image with build tools for native dependencies
+FROM node:20-alpine AS base
 RUN apk add --no-cache python3 make g++
-
 WORKDIR /app
 
+# Install all dependencies (including dev) for build stage
+FROM base AS deps-dev
 COPY package.json yarn.lock ./
-
 RUN yarn install --frozen-lockfile
 
+# Build application using local NestJS CLI
+FROM deps-dev AS build
 COPY . .
-
-RUN yarn build
-
+RUN ./node_modules/.bin/nest build
 RUN yarn cache clean
 
-# ---------- Runtime stage ----------
+# Install only production dependencies
+FROM base AS prod-deps
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production && yarn cache clean
 
+# Minimal runtime image
 FROM node:20-alpine AS runtime
-
 ENV NODE_ENV=production
-
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-
-COPY --from=build /app/node_modules ./node_modules
-
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
 USER node
-
 EXPOSE 5000
-
 CMD ["node", "dist/main"]

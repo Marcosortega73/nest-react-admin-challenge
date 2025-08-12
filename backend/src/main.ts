@@ -14,11 +14,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
   
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = app.get(ConfigService);
 
@@ -33,9 +29,16 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document);
 
   if (config.get('SEED_ON_BOOT') === 'true') {
-    await app.get(SeedService).run();
+    try {
+      const seeder = await app.resolve(SeedService);
+      await seeder.run();
+      console.log('[SEED] Completed');
+    } catch (e: any) {
+      console.warn('[SEED] Skipped/failed:', e?.message ?? e);
+    }
   }
-
-  await app.listen(config.get('PORT') || 5000);
+  
+  const port = parseInt(config.get('PORT') ?? '5000', 10);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();

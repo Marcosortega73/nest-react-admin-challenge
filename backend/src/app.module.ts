@@ -12,6 +12,7 @@ import { DatabaseModule } from './database/database.module';
 import { EnrollmentModule } from './enrollments/enrollments.module';
 import { StatsModule } from './stats/stats.module';
 import { UserModule } from './user/user.module';
+import { SeedModule } from './database/seeds/seed.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserModule } from './user/user.module';
     CourseModulesModule,
     CourseLessonsModule,
     StatsModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],
