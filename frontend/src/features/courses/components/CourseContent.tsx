@@ -249,7 +249,7 @@ export default function CourseContent({
 
   const renderContent = () => {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 bg-white p-6 rounded-b-md shadow-md">
         {/* Add Module Button */}
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Course Modules</h2>

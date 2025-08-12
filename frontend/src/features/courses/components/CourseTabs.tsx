@@ -16,7 +16,7 @@ interface CourseTabsProps {
 
 export default function CourseTabs({ activeTab, onTabChange, availableTabs }: CourseTabsProps) {
   return (
-    <div className="bg-white border-b border-gray-200 mb-6">
+    <div className="bg-white border-b border-gray-200 p-6 rounded-tl-md rounded-tr-md shadow-md">
       <nav className="-mb-px flex space-x-8">
         {availableTabs.map(tab => {
           const Icon = tab.icon;
