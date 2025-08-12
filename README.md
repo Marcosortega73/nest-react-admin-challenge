@@ -106,6 +106,15 @@ DATABASE_NAME=
 # JWT
 JWT_SECRET=""
 JWT_REFRESH_SECRET=""
+
+# Seed
+SEED_ON_BOOT=true
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+ADMIN_FIRST_NAME=admin
+ADMIN_LAST_NAME=admin
+BCRYPT_ROUNDS=10
+
 ```
 
 > Ensure `.env` is in `.gitignore`.
@@ -116,8 +125,8 @@ JWT_REFRESH_SECRET=""
 
 On first run, the app seeds an admin user:
 
-- **username:** `admin`
-- **password:** `admin123`
+- **username:** `admin` (or `ADMIN_USERNAME`)
+- **password:** `admin123` (or `ADMIN_PASSWORD`)
 
 > ⚠️ **Security:** Change these credentials immediately outside development.
 
@@ -192,4 +201,5 @@ yarn test:e2e
 - Use **Conventional Commits** (`feat:`, `fix:`, `docs:`, `chore:`, …).
 - PRs into `master`/`main` only with green tests and passing build.
 - Tag releases as `vX.Y.Z` and generate changelog (optional).
+
 
