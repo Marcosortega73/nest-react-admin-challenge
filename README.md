@@ -1,11 +1,15 @@
 # Admin Panel Project
 
-# Assumptions
+Full-stack admin panel with **NestJS** (API), **React** (frontend) and **PostgreSQL**. Includes JWT auth (access + refresh), role-based authorization and Swagger docs.
 
-- User can have only 1 role.
-- 3 Roles: Admin, Editor, User (Authorizations of roles are described down below)
-- There are 3 data types. Users, Courses and Contents.
-- Courses can have multiple contents.
+## Assumptions
+
+- Each user has a single role.
+- Roles: **Admin**, **Editor**, **User**.
+- Data types: **Users**, **Courses**, **Contents**.
+- A Course can have multiple Contents.
+
+### Permissions
 
 **Admin**
 
@@ -31,124 +35,161 @@
 | Courses  | ✓      |       |        |        |
 | Contents | ✓      |       |        |        |
 
-# Tech Stack
+---
 
-1. **Backend**: NestJS
-2. **Frontend**: React
-3. **Database**: PostgreSQL
-4. **Testing**: Jest for unit testing. Postman for e2e testing.
+## Tech Stack
 
-# Features
+- **Backend:** NestJS (TypeScript)
+- **Frontend:** React
+- **Database:** PostgreSQL
+- **Testing:** Jest (unit), Postman (e2e)
+
+---
+
+## Features
 
 - Swagger Documentation
-- JWT authentication with refresh & access token
-- Role based authorization
+- JWT auth (access + refresh)
+- Role-based authorization
 - Data filtering
-- Fully responsive design
+- Fully responsive UI
 
-# Authentication
+---
 
-Application generates 2 tokens on login. Access token and refresh token. Access token has a lifetime of 15 minutes and the refresh token has a lifetime of 1 year.
+## Quick Start (Docker)
 
-# First Login
-
-On the first run, application inserts a new admin to the database.
-
-- **username**: admin
-- **password**: admin123
-
-# How to setup
-
-## **Deploy with Docker**
-
-You can run the entire app using docker compose.
-
-On root directory
-
+1. **Copy environment variables**
 ```bash
-docker-compose up -d
+cp .env.example .env
+# Edit .env with your local values (DB and JWT)
 ```
 
-Application will be deployed on http://localhost:3000
-
-Swagger Docs on http://localhost:3000/api/docs
-
-## **Running locally**
-
-## Backend
-
-First you have to postgresql installed on your computer.
-
-Edit the database properties on the backend/.env file.
-
-On backend directory
-
-### Installing the dependencies
-
+2. **Run all services**
 ```bash
+docker compose up --build -d
+```
+
+3. **URLs**
+- Frontend: `http://localhost:3000`
+- API base: `http://localhost:3000/api` *(or 5000 if backend runs separately)*
+- Swagger: `http://localhost:3000/api/docs`
+
+To stop and clean:
+```bash
+docker compose down --volumes --remove-orphans
+```
+
+---
+
+## Environment Variables
+
+Only commit `.env.example` (never the real `.env` with credentials).
+
+`.env.example`:
+```dotenv
+# Environment
+NODE_ENV=development
+
+# Database configuration variables for the PostgreSQL container
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+
+# API database connection configuration
+DATABASE_TYPE="postgres"
+DATABASE_HOST="database"   # Docker service name
+DATABASE_PORT=5432
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+DATABASE_NAME=
+
+# JWT
+JWT_SECRET=""
+JWT_REFRESH_SECRET=""
+```
+
+> Ensure `.env` is in `.gitignore`.
+
+---
+
+## Authentication
+
+On first run, the app seeds an admin user:
+
+- **username:** `admin`
+- **password:** `admin123`
+
+> ⚠️ **Security:** Change these credentials immediately outside development.
+
+---
+
+## Running locally (without Docker)
+
+### Backend
+
+1. Install dependencies:
+```bash
+cd backend
 yarn
 ```
 
-### Running the app
+2. Configure DB in `backend/.env`.
 
+3. Start backend:
 ```bash
-$ yarn start
+yarn start:dev
 ```
 
-Backend will be started on http://localhost:5000
+- API: `http://localhost:5000`
+- Swagger: `http://localhost:5000/api/docs`
 
-Swagger Docs on http://localhost:5000/api/docs
-
-## Frontend
-
-On frontend directory
-
-### Installing the dependencies
+### Frontend
 
 ```bash
+cd frontend
 yarn
-```
-
-### Running the app
-
-```bash
-$ yarn start
-```
-
-Frontend will be started on http://localhost:3000
-
-# Testing
-
-**Unit testing**
-
-On backend directory
-
-```bash
-yarn test
-```
-
-**e2e api testing**
-
-First start the backend locally.
-
-On backend directory
-
-Install the dependencies
-
-```bash
-yarn
-```
-
-Start the backend locally.
-
-```bash
 yarn start
 ```
 
-Start the test
+- Frontend: `http://localhost:3000`
 
-Test will login as **username:** admin, **password:** admin123 and create users with usernames test and test2. If you change username and password of admin or if you add users with username test and test2. Tests will fail.
+---
 
+## Testing
+
+**Unit tests (backend)**
+```bash
+cd backend
+yarn test
+```
+
+**e2e API tests**
+1. Start backend locally:
+```bash
+cd backend
+yarn
+yarn start
+```
+2. Run tests:
 ```bash
 yarn test:e2e
 ```
+> Tests login with **admin/admin123** and create users `test` and `test2`. If you change these credentials or already have these users, tests will fail.
+
+---
+
+## Project Structure
+
+- `backend/` – NestJS API (modules, controllers, services, guards).
+- `frontend/` – React app (pages, components, hooks).
+- `docker-compose.yml` – Services: database, backend, frontend.
+- `.env.example` – Template for environment variables.
+
+---
+
+## Contributing
+
+- Use **Conventional Commits** (`feat:`, `fix:`, `docs:`, `chore:`, …).
+- PRs into `master`/`main` only with green tests and passing build.
+- Tag releases as `vX.Y.Z` and generate changelog (optional).
+
