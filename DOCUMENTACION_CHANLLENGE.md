@@ -61,6 +61,8 @@
   - Proxy `/api/` mejorado con headers, timeouts y soporte WebSockets.  
   - Uso de `upstream` y `root` estándar `/usr/share/nginx/html` para mejor rendimiento y compatibilidad.  
   - Manejo correcto de rutas SPA con `try_files`.
+- **Seed**: removido del `main.ts` y movido a `database/seeds/seed.service`, ejecutado solo si `SEED_ON_BOOT=true`.  
+- **Validación**: configuración reforzada del `ValidationPipe` global (`whitelist`, `forbidNonWhitelisted`, `transform`) para mayor seguridad y consistencia de datos.
 
 ---
 
@@ -101,14 +103,19 @@ Implementarlo permitía:
 ---
 
 ## Propuestas de mejora tecnológica (futuro)
-
+**Frontend**
 - Evaluar migración a **Vite** para mejorar tiempos de build.
 - Actualización y limpieza continua de dependencias.
 - Migrar todos los módulos a arquitectura **FSD** (Feature-Sliced Design) hasta lograr una arquitectura escalable y mantenible parecida a clean architecture.
 - Refactor de módulos legacy para unificar patrones.
+
+**Backend**
 - **Swagger/OpenAPI**: actualizar la documentación de endpoints con ejemplos y esquemas.
 - Mejoras de seguridad backend: `helmet`, rate limiting y CSP.
-- **Paginación**: implementar paginación en todos los módulos y listados para mejorar rendimiento y UX.
+- Paginación: implementar paginación en todos los módulos y listados para mejorar rendimiento y UX.
+- Seeds/Migraciones por CLI: nest-commander con comandos seed run/reset y factories con faker.
+- Seguridad extra: helmet + CSP, throttling por IP/ruta, rotación de JWT/COOKIE_SECRET.
+- Subida de archivos: S3 con presigned URLs, validación de MIME y antivirus opcional.
 
 ---
 

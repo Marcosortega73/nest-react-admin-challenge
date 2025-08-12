@@ -43,6 +43,11 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 
 ### Changed
 
+**refactor: move seed logic & enhance validation**
+- Move hardcoded seed creation from `main.ts` to `database/seeds/seed.service` with `SEED_ON_BOOT` env toggle.
+- Enhance global `ValidationPipe` with `whitelist`, `forbidNonWhitelisted`, and `transform`.
+- Use `ConfigService` for `PORT` and env variable loading.
+
 **refactor: modernize TypeORM syntax**
 - Update `findOne(id)` to `findOne({ where: { id } })`
 - Update `delete(object)` to `remove()` or `delete(id)`

@@ -1,45 +1,41 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import { Role } from './enums/role.enum';
-import { User } from './user/user.entity';
+import { SeedService } from 'database/seeds/seed.service';
+import { ConfigService } from '@nestjs/config';
 
-async function createAdminOnFirstUse() {
-  const admin = await User.findOne({ where: { username: 'admin' } });
 
-  if (!admin) {
-    await User.create({
-      firstName: 'admin',
-      lastName: 'admin',
-      isActive: true,
-      username: 'admin',
-      role: Role.Admin,
-      password: await bcrypt.hash('admin123', 10),
-    }).save();
-  }
-}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.use(cookieParser());
-  app.useGlobalPipes(new ValidationPipe());
+  
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
 
-  const config = new DocumentBuilder()
+  const config = app.get(ConfigService);
+
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('Carna Project API')
     .setDescription('Carna Project API Documentation')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
   SwaggerModule.setup('/api/docs', app, document);
 
-  await createAdminOnFirstUse();
+  if (config.get('SEED_ON_BOOT') === 'true') {
+    await app.get(SeedService).run();
+  }
 
-  await app.listen(5000);
+  await app.listen(config.get('PORT') || 5000);
 }
 bootstrap();
