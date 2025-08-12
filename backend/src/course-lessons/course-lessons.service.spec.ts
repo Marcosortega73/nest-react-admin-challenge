@@ -225,7 +225,9 @@ describe('CourseLessonsService', () => {
 
       const result = await service.findOne(id);
 
-      expect(repository.findOne).toHaveBeenCalledWith(id);
+      expect(repository.findOne).toHaveBeenCalledWith({
+        where: { id },
+      });
       expect(result).toBe(mockCourseLesson);
     }); 
 
@@ -270,10 +272,11 @@ describe('CourseLessonsService', () => {
       const id = 'lesson-id';
       const updateDto: UpdateCourseLessonDto = {
         type: LessonType.TEXT,
-        moduleIndex: 1,
-        isPublished: true,
+        title: 'Updated Lesson',
         position: 1,
-        html: '<p>Updated Lesson</p>',
+        moduleIndex: 1,
+        isPublished: false,
+        html: '', // Empty HTML should trigger validation error
       };
 
       repository.findOne.mockResolvedValue(mockCourseLesson);
