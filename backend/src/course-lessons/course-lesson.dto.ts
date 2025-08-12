@@ -36,6 +36,10 @@ export class CreateCourseLessonDto {
   position?: number;
 
   @IsNotEmpty()
+  @IsUUID()
+  moduleId: string;
+
+  @IsNotEmpty()
   @IsEnum(LessonType)
   type: LessonType;
 
@@ -57,10 +61,13 @@ export class CreateCourseLessonDto {
 
   @IsOptional()
   @IsBoolean()
-  isPreview?: boolean;
+  isPublished?: boolean;
 }
 
-export class UpdateCourseLessonDto extends PartialType(CreateCourseLessonDto) {}
+export class UpdateCourseLessonDto extends PartialType(CreateCourseLessonDto) {
+  moduleIndex: number;
+  isPublished: boolean;
+}
 
 export class FindCourseLessonsDto {
   @IsOptional()

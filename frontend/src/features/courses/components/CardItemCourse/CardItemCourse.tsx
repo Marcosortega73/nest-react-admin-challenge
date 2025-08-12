@@ -1,0 +1,56 @@
+import CourseDefaultImg from '@assets/images/courses/courses-default.webp';
+import { Course } from '@features/courses/types';
+import { IconButtonComponent } from '@shared/components/buttons';
+import { Eye, Users } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
+
+import styles from './CardItemCourse.module.css';
+
+interface CardItemCourseProps {
+  course: Course;
+}
+
+export default function CardItemCourse({ course }: CardItemCourseProps) {
+  const navigate = useNavigate();
+
+  const handleViewCourse = () => {
+    navigate(`/courses/${course.id}`);
+  };
+
+  const handleCountEnrollCourse = () => {
+    return course?.enrollments?.length || 0;
+  };
+
+  return (
+    <div className={styles.urbc_card} onClick={handleViewCourse}>
+      <div className={`${styles.urbc_card__shine}`}></div>
+      <div className={`${styles.urbc_card__glow}`}></div>
+      <div className={`${styles.urbc_card__content}`}>
+        <div className={`${styles.urbc_card__badge}`}>NEW</div>
+        <div className={`${styles.urbc_card__image}`}>
+          <img
+            src={course.imageUrl || CourseDefaultImg}
+            alt="Course default"
+            className="w-full h-full object-cover"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
+          />
+        </div>
+        <div className={`${styles.urbc_card__text}`}>
+          <p className={`${styles.urbc_card__title}`}>{course.name}</p>
+          <p className={`${styles.urbc_card__description}`}>{course.description}</p>
+        </div>
+        <div className={`${styles.urbc_card__footer}`}>
+          <div className={`${styles.urbc_card__enrollment} flex items-center gap-1`}>
+            <Users />
+            {handleCountEnrollCourse()}
+          </div>
+          <div className={`${styles.urbc_card__enrollment}`}>
+            <IconButtonComponent icon={<Eye />} shape="circle" size="sm" variant="primary" onClick={handleViewCourse} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

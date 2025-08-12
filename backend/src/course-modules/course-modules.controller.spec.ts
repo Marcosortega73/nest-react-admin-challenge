@@ -108,9 +108,9 @@ describe('CourseModulesController', () => {
 
       service.findOne.mockResolvedValue(mockCourseModule);
 
-      const result = await controller.findOne(courseId, id);
+      const result = await controller.findOne(id);
 
-      expect(service.findOne).toHaveBeenCalledWith(courseId, id);
+      expect(service.findOne).toHaveBeenCalledWith(id);
       expect(result).toBe(mockCourseModule);
     });
   });
@@ -126,9 +126,9 @@ describe('CourseModulesController', () => {
       const updatedCourseModule = { ...mockCourseModule, ...updateDto };
       service.update.mockResolvedValue(updatedCourseModule as any);
 
-      const result = await controller.update(courseId, id, updateDto);
+      const result = await controller.update(id, updateDto);
 
-      expect(service.update).toHaveBeenCalledWith(courseId, id, updateDto);
+      expect(service.update).toHaveBeenCalledWith(id, updateDto);
       expect(result).toBe(updatedCourseModule);
     });
   });
@@ -141,9 +141,9 @@ describe('CourseModulesController', () => {
       const publishedCourseModule = { ...mockCourseModule, isPublished: true };
       service.publish.mockResolvedValue(publishedCourseModule as any);
 
-      const result = await controller.publish(courseId, id);
+      const result = await controller.publish(id);
 
-      expect(service.publish).toHaveBeenCalledWith(courseId, id);
+      expect(service.publish).toHaveBeenCalledWith(id);
       expect(result).toBe(publishedCourseModule);
     });
   });
@@ -155,9 +155,9 @@ describe('CourseModulesController', () => {
 
       service.delete.mockResolvedValue(undefined);
 
-      await controller.delete(courseId, id);
+      await controller.delete(id);
 
-      expect(service.delete).toHaveBeenCalledWith(courseId, id);
+      expect(service.delete).toHaveBeenCalledWith(id);
     });
   });
 });

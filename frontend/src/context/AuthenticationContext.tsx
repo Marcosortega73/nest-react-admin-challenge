@@ -1,20 +1,36 @@
-import { createContext, Dispatch, SetStateAction, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
-import User from '../models/user/User';
+export type AuthUser = {
+  firstName: string;
+  id: string;
+  role: string;
+  email?: string;
+  username?: string;
+  lastName?: string;
+  imageUrl?: string;
+};
 
-interface AuthContextValue {
-  authenticatedUser: User;
-  setAuthenticatedUser: Dispatch<SetStateAction<User>>;
+type AuthCtx = {
+  authenticatedUser: AuthUser | null;
+  setAuthenticatedUser: (u: AuthUser | null) => void;
+  bootstrapping: boolean;
+  setBootstrapping: (b: boolean) => void;
+};
+
+export const AuthenticationContext = createContext<AuthCtx>({} as AuthCtx);
+
+export function AuthenticationProvider({ children }: { children: React.ReactNode }) {
+  const [authenticatedUser, setAuthenticatedUser] = useState<AuthUser | null>(null);
+  const [bootstrapping, setBootstrapping] = useState<boolean>(true);
+
+  const value = useMemo(
+    () => ({ authenticatedUser, setAuthenticatedUser, bootstrapping, setBootstrapping }),
+    [authenticatedUser, bootstrapping],
+  );
+
+  return <AuthenticationContext.Provider value={value}>{children}</AuthenticationContext.Provider>;
 }
 
-export const AuthenticationContext = createContext<AuthContextValue>(null);
-
-export function AuthenticationProvider({ children }) {
-  const [authenticatedUser, setAuthenticatedUser] = useState<User>();
-
-  return (
-    <AuthenticationContext.Provider value={{ authenticatedUser, setAuthenticatedUser }}>
-      {children}
-    </AuthenticationContext.Provider>
-  );
+export default function useAuth() {
+  return useContext(AuthenticationContext);
 }

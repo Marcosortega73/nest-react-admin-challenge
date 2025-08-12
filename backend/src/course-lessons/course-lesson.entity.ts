@@ -52,18 +52,18 @@ export class CourseLesson extends BaseEntity {
   durationSec?: number;
 
   @Column({ type: 'boolean', default: false })
-  isPreview: boolean;
+  isPublished: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 
   @Column({ select: false, nullable: false })
   moduleId: string;
 
-  @ManyToOne(() => CourseModule, (module) => module.lessons, {
+  @ManyToOne(() => CourseModule, module => module.lessons, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'moduleId' })

@@ -50,6 +50,7 @@ describe('CourseModulesService', () => {
             findAndCount: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -113,9 +114,7 @@ describe('CourseModulesService', () => {
       repository.create.mockReturnValue(mockCourseModule as any);
       repository.save.mockRejectedValue(uniqueError);
 
-      await expect(service.create(courseId, createDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(service.create(courseId, createDto)).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -145,34 +144,29 @@ describe('CourseModulesService', () => {
 
   describe('findOne', () => {
     it('should return course module when found', async () => {
-      const courseId = 'course-id';
       const id = 'module-id';
 
       repository.findOne.mockResolvedValue(mockCourseModule);
 
-      const result = await service.findOne(courseId, id);
+      const result = await service.findOne(id);
 
       expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id, courseId, isDeleted: false },
+        where: { id },
       });
       expect(result).toBe(mockCourseModule);
     });
 
     it('should throw NotFoundException when course module not found', async () => {
-      const courseId = 'course-id';
       const id = 'non-existent-id';
 
       repository.findOne.mockResolvedValue(null);
 
-      await expect(service.findOne(courseId, id)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('publish/unpublish', () => {
     it('should publish course module', async () => {
-      const courseId = 'course-id';
       const id = 'module-id';
 
       repository.findOne.mockResolvedValue(mockCourseModule);
@@ -181,7 +175,7 @@ describe('CourseModulesService', () => {
         isPublished: true,
       } as any);
 
-      const result = await service.publish(courseId, id);
+      const result = await service.publish(id);
 
       expect(result.isPublished).toBe(true);
     });
@@ -189,21 +183,14 @@ describe('CourseModulesService', () => {
 
   describe('delete', () => {
     it('should soft delete course module', async () => {
-      const courseId = 'course-id';
       const id = 'module-id';
 
       repository.findOne.mockResolvedValue(mockCourseModule);
-      repository.save.mockResolvedValue({
-        ...mockCourseModule,
-        isDeleted: true,
-      } as any);
+      repository.remove.mockResolvedValue(mockCourseModule);
 
-      await service.delete(courseId, id);
+      await service.delete(id);
 
-      expect(repository.save).toHaveBeenCalledWith({
-        ...mockCourseModule,
-        isDeleted: true,
-      });
+      expect(repository.remove).toHaveBeenCalledWith(mockCourseModule);
     });
   });
 });

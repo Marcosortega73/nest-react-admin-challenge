@@ -26,7 +26,7 @@ describe('CourseLessonsController', () => {
     contentUrl: 'https://example.com/video.mp4',
     html: null,
     durationSec: 300,
-    isPreview: false,
+    isPublished: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     moduleId: 'module-id',
@@ -78,13 +78,14 @@ describe('CourseLessonsController', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         durationSec: 300,
+        moduleId,
       };
 
       service.create.mockResolvedValue(mockCourseLesson);
 
-      const result = await controller.create(moduleId, createDto);
+      const result = await controller.create(createDto);
 
-      expect(service.create).toHaveBeenCalledWith(moduleId, createDto);
+      expect(service.create).toHaveBeenCalledWith(createDto.moduleId, createDto);
       expect(result).toBe(mockCourseLesson);
     });
   });
@@ -110,9 +111,9 @@ describe('CourseLessonsController', () => {
 
       service.findOne.mockResolvedValue(mockCourseLesson);
 
-      const result = await controller.findOne(moduleId, id);
+      const result = await controller.findOne(id);
 
-      expect(service.findOne).toHaveBeenCalledWith(moduleId, id);
+      expect(service.findOne).toHaveBeenCalledWith(id);
       expect(result).toBe(mockCourseLesson);
     });
   });
@@ -124,14 +125,17 @@ describe('CourseLessonsController', () => {
       const updateDto: UpdateCourseLessonDto = {
         title: 'Updated Lesson',
         durationSec: 600,
+        moduleIndex: 1,
+        isPublished: true,
+        position: 1,
       };
 
       const updatedCourseLesson = { ...mockCourseLesson, ...updateDto };
       service.update.mockResolvedValue(updatedCourseLesson as any);
 
-      const result = await controller.update(moduleId, id, updateDto);
+      const result = await controller.update(id, updateDto);
 
-      expect(service.update).toHaveBeenCalledWith(moduleId, id, updateDto);
+      expect(service.update).toHaveBeenCalledWith(id, updateDto);
       expect(result).toBe(updatedCourseLesson);
     });
   });
@@ -158,14 +162,13 @@ describe('CourseLessonsController', () => {
 
   describe('delete', () => {
     it('should delete a course lesson', async () => {
-      const moduleId = 'module-id';
       const id = 'lesson-id';
 
       service.delete.mockResolvedValue(undefined);
 
-      await controller.delete(moduleId, id);
+      await controller.delete(id);
 
-      expect(service.delete).toHaveBeenCalledWith(moduleId, id);
+      expect(service.delete).toHaveBeenCalledWith(id);
     });
   });
 });

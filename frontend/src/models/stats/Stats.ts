@@ -1,5 +1,7 @@
 export default interface Stats {
   numberOfUsers: number;
   numberOfCourses: number;
-  numberOfContents: number;
+  numberOfEnrollments: number;
+  numberOfPublishedCourses: number;
+  myCoursesNumberOfEnrollments?: number;
 }

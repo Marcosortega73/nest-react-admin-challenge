@@ -37,10 +37,10 @@ export class CourseModule extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 
   @Column({ select: false, nullable: false })

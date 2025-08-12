@@ -32,7 +32,7 @@ import {
 @ApiTags('course-lessons')
 @ApiBearerAuth()
 @UseGuards(JwtGuard, RolesGuard)
-@Controller('modules/:moduleId/lessons')
+@Controller('course-lessons')
 export class CourseLessonsController {
   constructor(private readonly courseLessonsService: CourseLessonsService) {}
 
@@ -40,11 +40,10 @@ export class CourseLessonsController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.Admin, Role.Editor)
   async create(
-    @Param('moduleId') moduleId: string,
     @Body() createCourseLessonDto: CreateCourseLessonDto,
   ): Promise<CourseLesson> {
     return await this.courseLessonsService.create(
-      moduleId,
+      createCourseLessonDto.moduleId,
       createCourseLessonDto,
     );
   }
@@ -61,21 +60,18 @@ export class CourseLessonsController {
   @Get(':id')
   @Roles(Role.Admin, Role.Editor, Role.User)
   async findOne(
-    @Param('moduleId') moduleId: string,
     @Param('id') id: string,
   ): Promise<CourseLesson> {
-    return await this.courseLessonsService.findOne(moduleId, id);
+    return await this.courseLessonsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(Role.Admin, Role.Editor)
   async update(
-    @Param('moduleId') moduleId: string,
     @Param('id') id: string,
     @Body() updateCourseLessonDto: UpdateCourseLessonDto,
   ): Promise<CourseLesson> {
     return await this.courseLessonsService.update(
-      moduleId,
       id,
       updateCourseLessonDto,
     );
@@ -94,9 +90,8 @@ export class CourseLessonsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(Role.Admin, Role.Editor)
   async delete(
-    @Param('moduleId') moduleId: string,
     @Param('id') id: string,
   ): Promise<void> {
-    return await this.courseLessonsService.delete(moduleId, id);
+    return await this.courseLessonsService.delete(id);
   }
 }

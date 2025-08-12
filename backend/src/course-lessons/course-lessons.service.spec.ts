@@ -25,7 +25,7 @@ describe('CourseLessonsService', () => {
     contentUrl: 'https://example.com/video.mp4',
     html: null,
     durationSec: 300,
-    isPreview: false,
+    isPublished: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     moduleId: 'module-id',
@@ -73,6 +73,7 @@ describe('CourseLessonsService', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         durationSec: 300,
+        moduleId,
       };
 
       const queryBuilder = {
@@ -107,6 +108,7 @@ describe('CourseLessonsService', () => {
         title: 'Text Lesson',
         type: LessonType.TEXT,
         html: '<p>Lesson content</p>',
+        moduleId,
       };
 
       const queryBuilder = {
@@ -140,6 +142,7 @@ describe('CourseLessonsService', () => {
       const createDto: CreateCourseLessonDto = {
         title: 'Invalid Text Lesson',
         type: LessonType.TEXT,
+        moduleId,
         // html is missing
       };
 
@@ -155,6 +158,7 @@ describe('CourseLessonsService', () => {
       const createDto: CreateCourseLessonDto = {
         title: 'Invalid Video Lesson',
         type: LessonType.VIDEO,
+        moduleId,
         // contentUrl is missing
       };
 
@@ -172,6 +176,7 @@ describe('CourseLessonsService', () => {
         type: LessonType.VIDEO,
         contentUrl: 'https://example.com/video.mp4',
         position: 1,
+        moduleId,
       };
 
       const uniqueError = new QueryFailedError('query', [], {
@@ -214,26 +219,24 @@ describe('CourseLessonsService', () => {
 
   describe('findOne', () => {
     it('should return course lesson when found', async () => {
-      const moduleId = 'module-id';
       const id = 'lesson-id';
 
       repository.findOne.mockResolvedValue(mockCourseLesson);
 
-      const result = await service.findOne(moduleId, id);
+      const result = await service.findOne(id);
 
       expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id, moduleId },
+        where: { id },
       });
       expect(result).toBe(mockCourseLesson);
-    });
+    }); 
 
     it('should throw NotFoundException when course lesson not found', async () => {
-      const moduleId = 'module-id';
       const id = 'non-existent-id';
 
       repository.findOne.mockResolvedValue(null);
 
-      await expect(service.findOne(moduleId, id)).rejects.toThrow(
+      await expect(service.findOne(id)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -241,11 +244,13 @@ describe('CourseLessonsService', () => {
 
   describe('update', () => {
     it('should update course lesson with valid content', async () => {
-      const moduleId = 'module-id';
       const id = 'lesson-id';
       const updateDto: UpdateCourseLessonDto = {
         title: 'Updated Lesson',
         contentUrl: 'https://example.com/updated-video.mp4',
+        moduleIndex: 1,
+        isPublished: true,
+        position: 1,
       };
 
       repository.findOne.mockResolvedValue(mockCourseLesson);
@@ -254,7 +259,7 @@ describe('CourseLessonsService', () => {
         ...updateDto,
       } as any);
 
-      const result = await service.update(moduleId, id, updateDto);
+      const result = await service.update(id, updateDto);
 
       expect(repository.save).toHaveBeenCalledWith({
         ...mockCourseLesson,
@@ -264,16 +269,19 @@ describe('CourseLessonsService', () => {
     });
 
     it('should validate content when updating lesson type', async () => {
-      const moduleId = 'module-id';
       const id = 'lesson-id';
       const updateDto: UpdateCourseLessonDto = {
         type: LessonType.TEXT,
-        // html is missing for TEXT type
+        title: 'Updated Lesson',
+        position: 1,
+        moduleIndex: 1,
+        isPublished: false,
+        html: '', // Empty HTML should trigger validation error
       };
 
       repository.findOne.mockResolvedValue(mockCourseLesson);
 
-      await expect(service.update(moduleId, id, updateDto)).rejects.toThrow(
+      await expect(service.update(id, updateDto)).rejects.toThrow(
         new BadRequestException(
           'HTML content is required for TEXT type lessons',
         ),
@@ -283,13 +291,12 @@ describe('CourseLessonsService', () => {
 
   describe('delete', () => {
     it('should hard delete course lesson', async () => {
-      const moduleId = 'module-id';
       const id = 'lesson-id';
 
       repository.findOne.mockResolvedValue(mockCourseLesson);
       repository.delete.mockResolvedValue({ affected: 1 } as any);
 
-      await service.delete(moduleId, id);
+      await service.delete(id);
 
       expect(repository.delete).toHaveBeenCalledWith(mockCourseLesson.id);
     });

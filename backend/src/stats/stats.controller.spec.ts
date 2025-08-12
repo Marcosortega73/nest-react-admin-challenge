@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { StatsController } from './stats.controller';
 import { StatsService } from './stats.service';
+import { Role } from 'enums/role.enum';
+import { AuthenticatedUser } from 'auth/interfaces/authenticated-user.interface';
 
 const MockService = {
   getStats: jest.fn().mockImplementation(() => {
@@ -35,7 +37,10 @@ describe('StatsController', () => {
 
   describe('getStats', () => {
     it('should get stats', async () => {
-      const stats = await controller.getStats();
+      const stats = await controller.getStats({
+        userId: 'test',
+        role: Role.User,
+      } as AuthenticatedUser);
       expect(stats.numberOfCourses).toBe(5);
       expect(stats.numberOfUsers).toBe(10);
     });

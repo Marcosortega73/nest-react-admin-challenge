@@ -1,16 +1,26 @@
-import Course from '../models/course/Course';
-import CourseQuery from '../models/course/CourseQuery';
-import CreateCourseRequest from '../models/course/CreateCourseRequest';
-import UpdateCourseRequest from '../models/course/UpdateCourseRequest';
-import apiService from './ApiService';
+import CourseQuery from '@models/course/CourseQuery';
+import CreateCourseRequest from '@models/course/CreateCourseRequest';
+import UpdateCourseRequest from '@models/course/UpdateCourseRequest';
+import apiService from '@services/ApiService';
 
-class UserService {
+import { Course } from '../types';
+
+class CourseService {
   async save(createCourseRequest: CreateCourseRequest): Promise<void> {
     await apiService.post('/api/courses', createCourseRequest);
   }
 
   async findAll(courseQuery: CourseQuery): Promise<Course[]> {
     return (await apiService.get<Course[]>('/api/courses', { params: courseQuery })).data;
+  }
+
+  async getCounts(): Promise<{
+    all: number;
+    myCourses: number;
+    published: number;
+    draft: number;
+  }> {
+    return (await apiService.get('/api/courses/counts')).data;
   }
 
   async findOne(id: string): Promise<Course> {
@@ -26,5 +36,5 @@ class UserService {
   }
 }
 
-const userService = new UserService();
-export default userService;
+const courseService = new CourseService();
+export default courseService;
