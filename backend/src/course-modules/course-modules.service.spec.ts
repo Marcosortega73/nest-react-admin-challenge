@@ -50,6 +50,7 @@ describe('CourseModulesService', () => {
             findAndCount: jest.fn(),
             delete: jest.fn(),
             createQueryBuilder: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -113,9 +114,7 @@ describe('CourseModulesService', () => {
       repository.create.mockReturnValue(mockCourseModule as any);
       repository.save.mockRejectedValue(uniqueError);
 
-      await expect(service.create(courseId, createDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(service.create(courseId, createDto)).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -152,7 +151,7 @@ describe('CourseModulesService', () => {
       const result = await service.findOne(id);
 
       expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id, isDeleted: false },
+        where: { id },
       });
       expect(result).toBe(mockCourseModule);
     });
@@ -162,9 +161,7 @@ describe('CourseModulesService', () => {
 
       repository.findOne.mockResolvedValue(null);
 
-      await expect(service.findOne(id)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -189,17 +186,11 @@ describe('CourseModulesService', () => {
       const id = 'module-id';
 
       repository.findOne.mockResolvedValue(mockCourseModule);
-      repository.save.mockResolvedValue({
-        ...mockCourseModule,
-        isDeleted: true,
-      } as any);
+      repository.remove.mockResolvedValue(mockCourseModule);
 
       await service.delete(id);
 
-      expect(repository.save).toHaveBeenCalledWith({
-        ...mockCourseModule,
-        isDeleted: true,
-      });
+      expect(repository.remove).toHaveBeenCalledWith(mockCourseModule);
     });
   });
 });

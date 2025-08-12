@@ -49,10 +49,12 @@ export class CourseService {
             course,
           }),
         );
-        if (modules.length) await manager.save(modules);
 
-        const byModuleIndex = modules;
-        if ((createCourseDto.lessons?.length ?? 0) > 0 && modules.length === 0) {
+        const savedModules = modules.length ? await manager.save(modules) : [];
+
+        const byModuleIndex = savedModules;
+
+        if ((createCourseDto.lessons?.length ?? 0) > 0 && savedModules?.length === 0) {
           throw new BadRequestException('No se pueden crear lecciones sin módulos');
         }
         const counters = new Map<string, number>();
@@ -65,7 +67,7 @@ export class CourseService {
             contentUrl: l.content?.trim(),
             position: pos,
             type: LessonType.LINK,
-            isPublished: l.isPublished ?? l.isPublished ?? false,
+            isPublished: l.isPublished ?? false,
             module: m,
           });
         });
@@ -97,25 +99,28 @@ export class CourseService {
   async findAll(courseQuery: CourseQuery, userRole?: Role, userId?: string): Promise<Course[]> {
     // Apply filter-based logic first to determine join strategy
     const filter = courseQuery.filter || 'all';
-    
-    
+
     let queryBuilder: any;
-    
-    
+
     if (filter === 'my-courses' && userId) {
       queryBuilder = Course.createQueryBuilder('course')
         .leftJoinAndSelect('course.modules', 'modules')
         .leftJoinAndSelect('modules.lessons', 'lessons')
         .leftJoinAndSelect('course.resources', 'resources')
-        .innerJoinAndSelect('course.enrollments', 'enrollments', 'enrollments.userId = :userId AND enrollments.status = :status', { 
-          userId, 
-          status: 'ACTIVE' 
-        })
+        .innerJoinAndSelect(
+          'course.enrollments',
+          'enrollments',
+          'enrollments.userId = :userId AND enrollments.status = :status',
+          {
+            userId,
+            status: 'ACTIVE',
+          },
+        )
         .orderBy('course.name', 'ASC')
         .addOrderBy('course.description', 'ASC')
         .addOrderBy('modules.position', 'ASC')
         .addOrderBy('lessons.position', 'ASC');
-      
+
       if (userRole === Role.User) {
         queryBuilder.andWhere('course.isPublished = :isPublished', { isPublished: true });
       }
@@ -133,10 +138,7 @@ export class CourseService {
 
     if (courseQuery.search && courseQuery.search.trim()) {
       const searchTerm = `%${courseQuery.search.trim()}%`;
-      queryBuilder.andWhere(
-        '(course.name ILIKE :search OR course.description ILIKE :search)',
-        { search: searchTerm }
-      );
+      queryBuilder.andWhere('(course.name ILIKE :search OR course.description ILIKE :search)', { search: searchTerm });
     }
 
     switch (filter) {
@@ -168,10 +170,11 @@ export class CourseService {
     const courses = await queryBuilder.getMany();
 
     if (userRole === Role.User && filter === 'all') {
-      const filteredCourses = courses.filter(course => 
-        course.modules && 
-        course.modules.length > 0 && 
-        course.modules.some(module => module.lessons && module.lessons.length > 0)
+      const filteredCourses = courses.filter(
+        course =>
+          course.modules &&
+          course.modules.length > 0 &&
+          course.modules.some(module => module.lessons && module.lessons.length > 0),
       );
       return filteredCourses;
     }
@@ -189,23 +192,23 @@ export class CourseService {
     // Count all courses (respecting user role)
     let allQuery = baseQuery.clone();
     if (userRole === Role.User) {
-      allQuery = allQuery
-        .andWhere('course.isPublished = :isPublished', { isPublished: true });
+      allQuery = allQuery.andWhere('course.isPublished = :isPublished', { isPublished: true });
     }
     const allCourses = await allQuery.getMany();
-    const allCount = userRole === Role.User 
-      ? allCourses.filter(course => 
-          course.modules && 
-          course.modules.length > 0 && 
-          course.modules.some(module => module.lessons && module.lessons.length > 0)
-        ).length
-      : allCourses.length;
+    const allCount =
+      userRole === Role.User
+        ? allCourses.filter(
+            course =>
+              course.modules &&
+              course.modules.length > 0 &&
+              course.modules.some(module => module.lessons && module.lessons.length > 0),
+          ).length
+        : allCourses.length;
 
     // Count my courses (enrolled courses)
     let myCoursesCount = 0;
     if (userId) {
-      const myCoursesQuery = baseQuery.clone()
-        .andWhere('enrollments.userId = :userId', { userId });
+      const myCoursesQuery = baseQuery.clone().andWhere('enrollments.userId = :userId', { userId });
       const myCourses = await myCoursesQuery.getMany();
       myCoursesCount = myCourses.length;
     }
@@ -213,8 +216,7 @@ export class CourseService {
     // Count published courses (only for admin/editor)
     let publishedCount = 0;
     if (userRole !== Role.User) {
-      const publishedQuery = baseQuery.clone()
-        .andWhere('course.isPublished = :isPublished', { isPublished: true });
+      const publishedQuery = baseQuery.clone().andWhere('course.isPublished = :isPublished', { isPublished: true });
       const publishedCourses = await publishedQuery.getMany();
       publishedCount = publishedCourses.length;
     }
@@ -222,8 +224,7 @@ export class CourseService {
     // Count draft courses (only for admin/editor)
     let draftCount = 0;
     if (userRole !== Role.User) {
-      const draftQuery = baseQuery.clone()
-        .andWhere('course.isPublished = :isPublished', { isPublished: false });
+      const draftQuery = baseQuery.clone().andWhere('course.isPublished = :isPublished', { isPublished: false });
       const draftCourses = await draftQuery.getMany();
       draftCount = draftCourses.length;
     }
@@ -237,9 +238,9 @@ export class CourseService {
   }
 
   async findById(id: string): Promise<Course> {
-    const course = await Course.findOne({ 
-      where: { id }, 
-      relations: ['modules', 'modules.lessons', 'resources', 'enrollments'] 
+    const course = await Course.findOne({
+      where: { id },
+      relations: ['modules', 'modules.lessons', 'resources', 'enrollments'],
     });
     if (!course) {
       throw new HttpException(`Could not find course with matching id ${id}`, HttpStatus.NOT_FOUND);
